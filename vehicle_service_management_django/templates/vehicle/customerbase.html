@@ -14,6 +14,19 @@
 	<!-- End import lib -->
 
 	<link rel="stylesheet" type="text/css" href="{% static "style.css" %}">
+
+
+	<style>
+        /* Remove default button styles */
+        .plain-button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: none; /* You can add an underline style if desired */
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 <body class="overlay-scrollbar">
 	<!-- navbar -->
@@ -51,7 +64,8 @@
                 <a href="{%url 'users-home'%}" class="nav-item nav-link">Services</a>
 				<a href= "{% url 'about' %}"class="nav-item nav-link">FeedBack</a>
                 {% comment %} <div class="nav-item dropdown"> {% endcomment %}
-                    <a href="#" class="nav-item nav-link" data-bs-toggle="dropdown">Assessment</a>
+					<button id="assessmentButton" class="plain-button">Assessment</button>
+
                     {% comment %} <div class="dropdown-menu fade-up m-0">
                         <a href="booking.html" class="dropdown-item">Booking</a>
                         <a href="team.html" class="dropdown-item">Technicians</a>
@@ -192,6 +206,16 @@
 	<!-- import script -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 	<script src="{% static "index.js" %}"></script>
+<script>
+	// Get the button element by its ID
+	const button = document.getElementById('assessmentButton');
+
+	// Add a click event listener to the button
+	button.addEventListener('click', function() {
+		// Redirect to the specified URL when the button is clicked
+		window.location.href = 'https://1bc59dfc32045d7f61.gradio.live';
+	});
+</script>
 	<!-- end import script -->
 </body>
 </html>

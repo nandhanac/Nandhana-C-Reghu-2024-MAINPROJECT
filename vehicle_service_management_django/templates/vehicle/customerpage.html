@@ -36,6 +36,18 @@
 	<!-- End import lib -->
 
 	<link rel="stylesheet" type="text/css" href="{% static "style.css" %}">
+
+    <style>
+        /* Remove default button styles */
+        .plain-button {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: none; /* You can add an underline style if desired */
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 
 <body>
@@ -92,7 +104,7 @@
                 <a href= "{% url 'about' %}"class="nav-item nav-link">About</a>
                 <a href="#section1" class="nav-item nav-link">Services</a>
                 {% comment %} <div class="nav-item dropdown"> {% endcomment %}
-                    <a href="https://10c4b5de5e53f6a707.gradio.live" class="nav-item nav-link" data-bs-toggle="dropdown">Assessment</a>
+                    <button id="assessmentButton" class="plain-button">Assessment</button>
 
 
                     <div class="btn-group"> <a href="{% url 'customer-request' %}" class="nav-item nav-link dropdown-toggle dropdown-toggle-split py-4 px-lg-3" data-bs-toggle="dropdown"aria-haspopup="true" aria-expanded="false">Appointment</a>
@@ -744,6 +756,16 @@
                 }
             });
         });
+       
+        // Get the button element by its ID
+        const button = document.getElementById('assessmentButton');
+
+        // Add a click event listener to the button
+        button.addEventListener('click', function() {
+            // Redirect to the specified URL when the button is clicked
+            window.location.href = 'https://1bc59dfc32045d7f61.gradio.live';
+        });
+    
     </script>
 </body>
 

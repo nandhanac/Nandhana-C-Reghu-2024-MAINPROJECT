@@ -107,26 +107,30 @@ table#subsubcategoryTable img {
 <!-- Container for Form and Table -->
 <div class="container">
   <!-- Form to Create a Subcategory -->
-  <div class="form-container">
+  {% comment %} <div class="form-container">
     <form method="post" enctype="multipart/form-data" style="margin-left: 300px; margin-right: 10px;">
       {% csrf_token %}
       {{ subsubcategory_form.as_p }}
       <input type="submit" value="Create Subsubcategory">
   </form>
   
-  </div>
+  </div> {% endcomment %}
 
   <!-- Display Table of Subcategories using DataTables -->
   <div class="table-container">
     
-    <table id="subsubcategoryTable" class="display">
+    <table id="subsubcategoryTable" class="display" style="font-size: 12px; width: 80%;">
       <thead>
         <tr>
           <th>Subsubcategory Name</th>
           <th>SubCategory Name</th>
           <th>Category Name</th>
           <th>Image</th>
-          <th>Descriptions</th>
+          <th>Description 1</th>
+          <th>Description 2</th>
+          <th>Description 3</th>
+          <th>Description 4</th>
+          <th>Description 5</th>
           <th>Price</th>
           <th>Time</th>
           <th>Action</th>
@@ -141,7 +145,11 @@ table#subsubcategoryTable img {
             <td>{% if subsubcategory.image %}
               <img src="{{ subsubcategory.image.url }}" alt="{{ subsubcategory.name }}"height="40px" width="40px"> 
             {% endif %}</td>
-            <td>{{ subsubcategory.description }}</td>
+            <td>{{ subsubcategory.description_1 }}</td>
+            <td>{{ subsubcategory.description_2 }}</td>
+<td>{{ subsubcategory.description_3 }}</td>
+<td>{{ subsubcategory.description_4 }}</td>
+<td>{{ subsubcategory.description_5 }}</td>
             <td>{{ subsubcategory.price}}</td>
             <td>{{ subsubcategory.hours_taken}}</td>
             

@@ -157,6 +157,34 @@
 
 												<option value="{{ subsubcategory.id }}"><h4 class="doc-name">{{ subsubcategory.name }}</h4></option>
 												<p class="doc-speciality">{{ subsubcategory.description }}</p>
+												<div class="clinic-services">
+													{% comment %} <span>{{ subsubcategory.description_1 }}</span>
+													<span> {{ subsubcategory.description_2 }}</span>
+													<span> {{ subsubcategory.description_3 }}</span>
+													<span> {{ subsubcategory.description_4 }}</span>
+													<span> {{ subsubcategory.description_5 }}</span> {% endcomment %}
+													<label>
+														<input type="checkbox" id="description_1" value="{{ subsubcategory.description_1 }}" data-price="{{ subsubcategory.price_1 }}">
+														{{ subsubcategory.description_1 }}
+													</label>
+													<label>
+														<input type="checkbox" id="description_2" value="{{ subsubcategory.description_2 }}" data-price="{{ subsubcategory.price_2 }}">
+														{{ subsubcategory.description_2 }}
+													</label>
+													<label>
+														<input type="checkbox" id="description_3" value="{{ subsubcategory.description_3 }}" data-price="{{ subsubcategory.price_3 }}">
+														{{ subsubcategory.description_3 }}
+													</label>
+													<label>
+														<input type="checkbox" id="description_4" value="{{ subsubcategory.description_4 }}" data-price="{{ subsubcategory.price_4 }}">
+														{{ subsubcategory.description_4 }}
+													</label>
+													<label>
+														<input type="checkbox" id="description_5" value="{{ subsubcategory.description_5 }}" data-price="{{ subsubcategory.price_5 }}">
+														{{ subsubcategory.description_5 }}
+													</label>
+												</div>
+												<br>
 												<div class="rating">
 													<i class="fas fa-star filled"></i>
 													<i class="fas fa-star filled"></i>
@@ -167,48 +195,32 @@
 												</div>
 												<div class="clinic-details">
 													<p class="doc-location"><i class="#"></i>100Km or 1 month Warranty</p>
-													{% comment %} <ul class="clinic-gallery">
-														<li>
-															<a href="assets/img/features/feature-01.jpg" data-fancybox="gallery">
-																<img src="assets/img/features/feature-01.jpg" alt="Feature">
-															</a>
-														</li>
-														<li>
-															<a href="assets/img/features/feature-02.jpg" data-fancybox="gallery">
-																<img  src="assets/img/features/feature-02.jpg" alt="Feature">
-															</a>
-														</li>
-														<li>
-															<a href="assets/img/features/feature-03.jpg" data-fancybox="gallery">
-																<img src="assets/img/features/feature-03.jpg" alt="Feature">
-															</a>
-														</li>
-														<li>
-															<a href="assets/img/features/feature-04.jpg" data-fancybox="gallery">
-																<img src="assets/img/features/feature-04.jpg" alt="Feature">
-															</a>
-														</li>
-													</ul> {% endcomment %}
+													
 												</div>
-												<div class="clinic-services">
-													<span>Coolant - Top up</span>
-													<span> Multi-Layer Coating</span>
-												</div>
+												
 											</div>
 										</div>
 										<div class="doc-info-right">
 											<div class="clini-infos">
 												<ul>
-													{% comment %} <li><i class="far fa-thumbs-up"></i> 98%</li> {% endcomment %}
+													
 													<li><i class="far fa-hourglass"></i>{{ subsubcategory.hours_taken}} Hours</li>
 													 <li> </li> 
-													<li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li>
+													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li>  {% endcomment %}
+													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.total_price }} </li> {% endcomment %}
+			
 												</ul>
+												<div>
+													{% comment %} <h4>Selected Descriptions:</h4> {% endcomment %}
+													<ul id="selectedDescriptions">
+														<!-- The selected descriptions will be dynamically added here -->
+													</ul>
+													<h4 id="totalPrice">Total Price: Rs- 0.00</h4>
+												</div>
+												<input type="hidden" id="hiddenTotalPrice" name="hiddenTotalPrice" value="0">
 											</div>
 											<div class="clinic-booking">
-												{% comment %} <a class="view-pro-btn" href="doctor-profile.html">View Profile</a> {% endcomment %}
-												{% comment %} <a class="apt-btn"style="background-color:#D81324; border: 2px solid #D81324;" href="booking.html">select car</a> {% endcomment %}
-											<!-- Button to trigger the modal -->
+												
 											 <a class="btn btn-block btn-outline-primary select-button" style="background-color:#D81324; border: 2px solid #D81324;"onclick="selectCarModel('{{ car_model.id }}')" href="{% url 'selectcar' subsubcategory_id=subsubcategory.id %}">Select Car</a> 
 											{% comment %} <a href="{% url 'book_service' subsubcategory.id %}" class="btn btn-primary">Book Now</a> {% endcomment %}
 											<!-- Modal -->
@@ -248,10 +260,34 @@
 		<!-- Custom JS -->
 		<script src="{%static 'assets/js/script.js'%}"></script>
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Bootstrap JS -->
-
+		
+		
+			// Function to calculate and update the total price
+			<script>
+				// Function to calculate and update the total price
+				function updateTotalPrice() {
+					var total = 0;
+			
+					// Iterate through each checked description checkbox and add its price to the total
+					$('input[type="checkbox"]:checked').each(function () {
+						total += parseFloat($(this).data('price')) || 0;
+					});
+			
+					// Update the total price element on the page
+					$('#totalPrice').text(' Rs-' + total.toFixed(2));
+			
+					// Set the value of the hidden input field
+					$('#hiddenTotalPrice').val(total);
+				}
+			
+				// Bind the updateTotalPrice function to the change event of description checkboxes
+				$('input[type="checkbox"]').change(function () {
+					updateTotalPrice();
+				});
+			
+				// Trigger the initial calculation on page load
+				updateTotalPrice();
+			</script>
 	</body>
 
-<!-- doccure/search.html  30 Nov 2019 04:12:16 GMT -->
 </html>

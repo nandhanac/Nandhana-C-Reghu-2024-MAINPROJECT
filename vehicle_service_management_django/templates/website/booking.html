@@ -134,6 +134,7 @@
 								
 									<form method="post"enctype="multipart/form-data">
 										{% csrf_token %}
+										<input type="hidden" id="hiddenTotalPrice" name="hiddenTotalPrice" value="{{ subsubcategory.total_price }}">
 										<div class="info-widget"style="margin-left:100px;">
 
 											<div id="error-message">
@@ -237,7 +238,8 @@
 												<ul class="booking-total-list">
 													<li>
 														<span>Total</span>
-														<span class="total-cost"> {{ subsubcategory.price }}</span>
+														<span class="total-cost" id="totalPrice"> Rs-0.00</span>
+														{% comment %} <span class="total-cost"> {{ subsubcategory.price }}</span> {% endcomment %}
 													</li>
 												</ul>
 											</div>
@@ -277,7 +279,13 @@
 			function goBack() {
 				window.history.back();
 			  }
-			 
+			
+				  // Retrieve the total price from the hidden input field
+			var totalPrice = parseFloat($('#hiddenTotalPrice').val()) || 0;
+		  
+				  // Use the total price as needed in your booking page script
+			console.log('Total Price:', totalPrice);
+			  
 		</script>
 
 		

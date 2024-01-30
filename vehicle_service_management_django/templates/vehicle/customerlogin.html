@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 {% load static %}
-
 {% load widget_tweaks %}
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title>Login Page</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    
     <style media="screen">
       /* Your existing CSS styles */
       body {
@@ -22,15 +19,6 @@
         height: 150vh;
         background-attachment: fixed;
       }
-
-      {% comment %} .container {
-        width: 350px;
-        background: #191919;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        text-align: center;
-      } {% endcomment %}
       .box {
         width: 500px;
         padding: 40px;
@@ -58,23 +46,7 @@
         color:rgb(60, 60, 60);
         font-weight: bold;
         margin-left: -300px;
-        
       }
-
-      {% comment %} .form-control {
-        border: 2px solid #3498db;
-        padding: 10px;
-        width: 100%;
-        outline: none;
-        color: white;
-        background: transparent;
-        border-radius: 5px;
-        transition: border-color 0.25s;
-      }
-
-      .form-control:focus {
-        border-color: #2ecc71;
-      } {% endcomment %}
       .box input[type="text"]:focus,
       .box input[type="password"]:focus {
           width: 300px;
@@ -132,7 +104,6 @@
     <div class="container">
       <div class="row">
         <div class="col-md-6">
-          {% comment %} <div class="card"> {% endcomment %}
             <form class="box" method="post">
               {% csrf_token %}
               <h1>SignIn</h1>
@@ -164,8 +135,7 @@
                 <div class="text-danger">{{ form.non_field_errors.0 }}</div>
             {% endif %}
                 <a href="{% url 'password_reset' %}" class="btn btn-link float-right">Forgot Password?</a>
-              </div>
-<br>
+              </div><br>
               <div class="form-group">
                 <a href="{% url 'customersignup' %}" class="btn btn-link">Don't have an account yet? Go to signup</a>
                
@@ -173,24 +143,15 @@
 
               <div class="form-group">
                 <hr class='new'>
-                    <p class="text-center"><strong>OR</strong></p>
-                                           
-                    <a href="{% url 'social:begin' 'google-oauth2' %}"><button type="button" class="btn btn-google">Sign in with Google</button></a>
-              </div>
-
-            </form>
-          </div>
-        {% comment %} </div> {% endcomment %}
-      </div>
+    <p class="text-center"><strong>OR</strong></p>                                    
+    <a href="{% url 'social:begin' 'google-oauth2' %}"><button type="button" class="btn btn-google">Sign in with Google</button></a>
     </div>
-    {% comment %} <br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br><br><br><br><br>
-    <br><br><br><br><br>
-  {% endcomment %}
-    <!-- Bootstrap JavaScript -->
+    </form>
+    </div>
+    </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    {% comment %} <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> {% endcomment %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
       // Function to perform live validation
@@ -206,8 +167,6 @@
           } else {
               $("#username-error").text("");
           }
-  
-          // Check for password validation (e.g., length)
           if (password.length < 6) {
               $("#password-error").text("Password must be at least 6 characters long.");
               isValid = false;
@@ -217,8 +176,6 @@
   
           return isValid;
       }
-  
-      // Attach the validation function to the form's submit event
       $("#login-form").submit(function(event) {
           if (!validateLoginForm()) {
               event.preventDefault(); // Prevent form submission if validation fails
@@ -229,108 +186,3 @@
 </html>
 
 
-{% comment %} <!DOCTYPE html>
-{% load widget_tweaks %}
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-    <style media="screen">
-      body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background: linear-gradient(to right, #b92b27, #1565c0)
-     background-image: url('{% static "images/carousel-bg-1.jpg" %}');
-}
-
-.box {
-    width: 500px;
-    padding: 40px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background: #191919;
-
-    text-align: center;
-    transition: 0.25s;
-    margin-top: 100px
-}
-
-.box input[type="text"],
-.box input[type="password"] {
-    border: 0;
-    background: none;
-    display: block;
-    margin: 20px auto;
-    text-align: center;
-    border: 2px solid #3498db;
-    padding: 10px 10px;
-    width: 250px;
-    outline: none;
-    color: white;
-    border-radius: 24px;
-    transition: 0.25s
-}
-
-.box h1 {
-    color: white;
-    text-transform: uppercase;
-    font-weight: 500
-}
-
-.box input[type="text"]:focus,
-.box input[type="password"]:focus {
-    width: 300px;
-    border-color: #2ecc71
-}
-
-.box input[type="submit"] {
-    border: 0;
-    background: none;
-    display: block;
-    margin: 20px auto;
-    text-align: center;
-    border: 2px solid #2ecc71;
-    padding: 14px 40px;
-    outline: none;
-    color: white;
-    border-radius: 24px;
-    transition: 0.25s;
-    cursor: pointer
-}
-
-.box input[type="submit"]:hover {
-    background: #2ecc71
-}
-
-
-    </style>
-  </head>
-  <body>
-    {% include "vehicle/navbar.html" %}
-    <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <form class="box" method="post">
-                    {% csrf_token %}
-                    <h1>Customer Login</h1>
-                    <p class="text-muted"> Please enter your login and password!</p>
-
-                     {% render_field form.username class="form-control" placeholder="Username" %}
-                     {% render_field form.password class="form-control" placeholder="Password" %}
-
-                     <input type="submit" name="" value="Login">
-
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br>
-{% include "vehicle/footer.html" %}
-  </body>
-</html> {% endcomment %}

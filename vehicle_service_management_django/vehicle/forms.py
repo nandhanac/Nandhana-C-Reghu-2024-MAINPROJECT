@@ -135,13 +135,23 @@ class SubcategoryForm(forms.ModelForm):
 class SubSubcategoryForm(forms.ModelForm):
     # Add fields for image, description, price, and hours taken
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
-    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
+    # description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
+    description_1 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 1'}))
+    price_1 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 1'}))
+    description_2= forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 2'}))
+    price_2 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 2'}))
+    description_3 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 3'}))
+    price_3 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 3'}))
+    description_4 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 4'}))
+    price_4 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 4'}))
+    description_5 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 5'}))
+    price_5 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 5'}))
     price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price'}))
     hours_taken = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hours Taken'}))
 
     class Meta:
         model = SubSubcategory
-        fields = ['name', 'subcategory', 'image', 'description', 'price', 'hours_taken']
+        fields = ['name', 'subcategory', 'image', 'description_1', 'price_1', 'description_2', 'price_2', 'description_3', 'price_3', 'description_4', 'price_4', 'description_5', 'price_5', 'hours_taken']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'SubSubcategory Name'}),
             'subcategory': forms.Select(attrs={'class': 'form-control'}),
@@ -173,7 +183,44 @@ class TypeForm(forms.ModelForm):
     class Meta:
         model = Type
         fields = ['name', 'image']
-    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Check the number of existing entries
+        existing_entries_count = Type.objects.count()
+
+        # Set a maximum allowed number of entries
+        max_entries_allowed = 3  # Change this value to your desired limit
+
+        if existing_entries_count >= max_entries_allowed:
+            raise forms.ValidationError(
+                f"Cannot add more entries. Maximum allowed entries is {max_entries_allowed}."
+            )
+
+        return cleaned_data
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        # Add your custom validation logic for the 'name' field here
+        # For example, you can check if the name meets certain criteria
+        if len(name) < 3:
+            raise forms.ValidationError('Name must be at least 3 characters long.')
+        return name
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+
+        # Add your validation rules for the image field
+        # For example, you can check file type, size, etc.
+        if image:
+            # Check if the file is an image
+            if not image.content_type.startswith('image'):
+                raise forms.ValidationError("Uploaded file is not an image.")
+
+            # Check file size
+            if image.size > 5 * 1024 * 1024:  # 5 MB
+                raise forms.ValidationError("Image file size should not exceed 5 MB.")
+
 
 # class BookingForm(forms.ModelForm):
 #     class Meta:

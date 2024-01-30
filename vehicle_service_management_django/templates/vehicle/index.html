@@ -104,9 +104,9 @@
                 </button>
                 <div class="dropdown-menu">
                   <!-- Dropdown items go here -->
-                  <a class="dropdown-item" href="{%url 'customerlogin'%}">Customer</a>
-                  <a class="dropdown-item" href="/mechanicsclick" >Employee</a>
-                  <a class="dropdown-item" href="{%url 'adminlogin'%}">Admin</a>
+                  <a class="dropdown-item" id="cust" href="{%url 'customerlogin'%}">Customer</a>
+                  <a class="dropdown-item" id ="mec"href="/mechanicsclick" >Employee</a>
+                  <a class="dropdown-item" id="admin"href="{%url 'adminlogin'%}">Admin</a>
                 </div>
               </div>
             {% comment %} <a  href="{% url 'login' %}" role="button" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">LOGIN<i class="fa fa-arrow-right ms-3"></i></a> {% endcomment %}

@@ -105,15 +105,48 @@ class Subcategory(models.Model):
     def __str__(self):
         return self.name
 #subsubcategory means my service
+from django.db.models import F, Sum
 class SubSubcategory(models.Model):
     name = models.CharField(max_length=100)
     subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE,null=True)
     image = models.ImageField(upload_to='subsubcategories/', null=True, blank=True)  # Add an image field
-    description = models.TextField(null=True, blank=True)  # Add a description field
+    # description = models.TextField(null=True, blank=True)  # Add a description field
+    description_1 = models.TextField(null=True, blank=True)
+    price_1 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    description_2 = models.TextField(null=True, blank=True)
+    price_2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    description_3 = models.TextField(null=True, blank=True)
+    price_3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    description_4 = models.TextField(null=True, blank=True)
+    price_4 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    description_5 = models.TextField(null=True, blank=True)
+    price_5 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Add a price field
     hours_taken = models.PositiveIntegerField(null=True, blank=True)  # Add hours taken field
     
+
+    @property
+    def total_price(self):
+        # Calculate the total price by summing up the fixed subsubcategory price and the selected description prices
+        # fixed_price = self.price or 0
+        description_prices = SubSubcategory.objects.filter(id=self.id).aggregate(
+            total_price=Sum(
+                F('price_1') + F('price_2') + F('price_3') + F('price_4') + F('price_5'),
+                output_field=models.DecimalField()
+            )
+        )['total_price'] or 0
+
+        return  description_prices
+    # @property
+    # def total_price(self):
+    #     # Calculate the total price by summing up the fixed subsubcategory price and the selected description prices
+    #     total = self.price + sum(
+    #         getattr(self, f'price_{i}', 0) for i in range(1, 6)
+    #     )
+    #     return total
+        
     def __str__(self):
         return self.name
     

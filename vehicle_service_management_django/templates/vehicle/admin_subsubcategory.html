@@ -126,11 +126,11 @@ table#subsubcategoryTable img {
           <th>SubCategory Name</th>
           <th>Category Name</th>
           <th>Image</th>
-          <th>Description 1</th>
+          {% comment %} <th>Description 1</th>
           <th>Description 2</th>
           <th>Description 3</th>
           <th>Description 4</th>
-          <th>Description 5</th>
+          <th>Description 5</th> {% endcomment %}
           <th>Price</th>
           <th>Time</th>
           <th>Action</th>
@@ -145,11 +145,11 @@ table#subsubcategoryTable img {
             <td>{% if subsubcategory.image %}
               <img src="{{ subsubcategory.image.url }}" alt="{{ subsubcategory.name }}"height="40px" width="40px"> 
             {% endif %}</td>
-            <td>{{ subsubcategory.description_1 }}</td>
+            {% comment %} <td>{{ subsubcategory.description_1 }}</td>
             <td>{{ subsubcategory.description_2 }}</td>
 <td>{{ subsubcategory.description_3 }}</td>
 <td>{{ subsubcategory.description_4 }}</td>
-<td>{{ subsubcategory.description_5 }}</td>
+<td>{{ subsubcategory.description_5 }}</td> {% endcomment %}
             <td>{{ subsubcategory.price}}</td>
             <td>{{ subsubcategory.hours_taken}}</td>
             

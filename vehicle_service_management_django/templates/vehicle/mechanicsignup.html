@@ -18,7 +18,7 @@
         }
 
         .box {
-            width: 500px;
+            width: 650px;
             padding: 40px;
             position: absolute;
             top: 50%;
@@ -29,7 +29,25 @@
             transition: 0.25s;
             margin-top: -280px
         }
-
+        .form-group {
+          display: inline-block;
+          margin-right: 10px; /* Adjust the margin as needed to provide space between form fields */
+      }
+  
+      .box input[type="text"],
+      .box input[type="password"],
+      
+      .box input[type="file"] {
+          width: 200px; /* Adjust the width as needed */
+          display: inline-block;
+      }
+  
+      .box input[type="submit"] {
+          width: auto; /* Let the submit button take the available width */
+          display: block;
+          margin: 20px auto;
+      }
+  
 .box input[type="text"],
 .box input[type="password"] {
     border: 0;
@@ -95,6 +113,31 @@
     margin-top: 5px; 
    
 }
+/* Add this CSS to your existing stylesheet or in a style tag in your HTML */
+
+.form-group-cer {
+    margin-bottom: 20px;
+    margin-left:10px;  /* Adjust the margin as needed to create space between the groups */
+}
+
+
+.form-group-cer label {
+    display: inline;
+    margin-bottom: 5px;  /* Adjust the margin as needed to create space between the label and input */
+}
+
+
+.form-group-cer input {
+    width: 100%;  /* Make the inputs fill the width of their container */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.text-danger {
+    font-size: 12px;  /* Adjust the font size as needed */
+    margin-top: 5px;
+}
+
     </style>
   </head>
   <body>
@@ -128,16 +171,7 @@
                           {% render_field mechanicForm.mobile class="form-control" placeholder=" Enter Mobile" %}
                           <div id="mobile-error" class="text-danger"></div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_job_title" class="form-label">Job Title</label><br>
-                            {% render_field mechanicForm.job_title class="form-control" placeholder="Enter Skills" %}
-                            <div id="job-title-error" class="text-danger"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="id_skill" class="form-label">Skill</label>
-                          {% render_field mechanicForm.skill class="form-control" placeholder="Enter Skills" %}
-                          <div id="skill-error" class="text-danger"></div>
-                        </div>
+                      
                           <div class="form-group">
                             <label for="id_username" class="form-label">Username</label>
                           {% render_field userForm.username class="form-control" placeholder="Enter Username" %}
@@ -148,14 +182,25 @@
                             {% render_field userForm.password class="form-control" placeholder="Enter Password" %}
                             <div id="password-error" class="text-danger"></div>
                         </div>
-                        <div class="form-group">
-                            <label for="id_profile_pic" class="form-label">Profile</label><br></br>
-                                  {% render_field mechanicForm.profile_pic class="form-control" placeholder="Profile pic" %}
-                                  <div id="profile_pic-error" class="text-danger"></div>
-                                </div>
+                        <div class="form-group" >
+                          <label for="id_job_title" class="form-label">Job Title</label><br>
+                          {% render_field mechanicForm.job_title class="form-control" placeholder="Enter Skills" %}
+                          <div id="job-title-error" class="text-danger"></div>
+                      </div>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                      <div class="form-group">
+                        <label for="id_profile_pic" class="form-label"> &emsp;&emsp;&emsp;Profile</label><br></br>
+                              {% render_field mechanicForm.profile_pic class="form-control" placeholder="Profile pic" %}
+                              <div id="profile_pic-error" class="text-danger"></div>
+                            </div><br>
+                            <br>
+                      <div class="form-group-cer">
+                        <label for="id_qualification_certificate" class="form-label">Upload your resume</label>
+                        {% render_field mechanicForm.qualification_certificate class="form-control" placeholder="Upload Qualification Certificate" %}
+                        <div id="qualification-certificate-error" class="text-danger"></div>
+                    </div>
                                 <div class="form-group">
                      <input type="submit" name="" value="Create">
-                                </div>
+                                </div><br>
                                 <div class="form-group">
                                     <p>Already have an account? <a href="{% url 'mechaniclogin' %}" class="btn btn-link">Sign In</a></p>
                                   </div>

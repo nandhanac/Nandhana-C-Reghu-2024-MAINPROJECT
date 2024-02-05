@@ -2,11 +2,12 @@ from django import forms
 from django.contrib.auth.models import User
 from . import models
 from .models import Category,Subcategory,SubSubcategory
-from .models import CarModel,CarName,Type,Booking
+from .models import CarModel,CarName,Type,Booking,Mechanic
 
 
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+
 
 class CustomerUserForm(forms.ModelForm):
     class Meta:
@@ -38,19 +39,44 @@ class MechanicUserForm(forms.ModelForm):
 class MechanicForm(forms.ModelForm):
     job_title = forms.ChoiceField(
         choices=[('select title', 'select title'),('mechanic', 'Mechanic'), ('painter', 'Painter'), ('Tester','Tester'),
-        ('Operator','Operator')],
+        ('Operator','Operator'), ('driver', 'Delivery Driver')],
         widget=forms.Select(attrs={'class': 'form-control'}),
         label='Job Title'
     )
-    
+    qualification_certificate = forms.FileField(
+        required=False,
+        widget=forms.FileInput(attrs={'class': 'form-control'}),
+        label='Qualification Certificate'
+    )
+
+    def clean_qualification_certificate(self):
+        certificate = self.cleaned_data.get('qualification_certificate')
+        if certificate:
+            if not certificate.name.lower().endswith('.pdf'):
+                raise forms.ValidationError('Please upload a PDF file for the qualification certificate.')
+        return certificate
+
     class Meta:
         model=models.Mechanic
-        fields=['address','mobile','profile_pic','job_title','skill']
-
+        fields=['address','mobile','profile_pic','job_title', 'qualification_certificate']
+    
 class MechanicSalaryForm(forms.Form):
     salary=forms.IntegerField();
 
+class AssignDriverForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AssignDriverForm, self).__init__(*args, **kwargs)
+        self.fields['driver'].queryset = Mechanic.objects.filter(job_title='driver')
 
+    driver = forms.ModelChoiceField(
+        queryset=Mechanic.objects.filter(job_title='driver'),
+        label='Select Driver',
+        empty_label='Choose a driver'
+    )
+
+    class Meta:
+        model = Booking
+        fields = []
 class RequestForm(forms.ModelForm):
     class Meta:
         model=models.Request
@@ -114,6 +140,15 @@ class CategoryForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Category Name'}),
             # 'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Category Description'}),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        categories_count = Category.objects.count()
+
+        # Check if the maximum number of entries (4) has been reached
+        if categories_count >= 4:
+            raise forms.ValidationError('You cannot add  categories no more.')
+
+        return cleaned_data
 #subcategory
 class SubcategoryForm(forms.ModelForm):
     # Add a category field to select the associated category
@@ -130,32 +165,60 @@ class SubcategoryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Set the queryset for the category field to display existing categories
         self.fields['category'].queryset = Category.objects.all()
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        category = cleaned_data.get('category')
+
+        # Check if a subcategory with the same name and category already exists
+        if Subcategory.objects.filter(name=name, category=category).exists():
+            raise forms.ValidationError('.........A subcategory with the same name and category already exists.')
+
+        # Check if the maximum number of entries (e.g., 5) has been reached
+        if Subcategory.objects.count() >= 11:
+            raise forms.ValidationError('.........You cannot add subcategories.')
+
+        return cleaned_data
 
 #subsubcategory
 class SubSubcategoryForm(forms.ModelForm):
     # Add fields for image, description, price, and hours taken
     image = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
-    # description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
-    description_1 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 1'}))
-    price_1 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 1'}))
-    description_2= forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 2'}))
-    price_2 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 2'}))
-    description_3 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 3'}))
-    price_3 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 3'}))
-    description_4 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 4'}))
-    price_4 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 4'}))
-    description_5 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 5'}))
-    price_5 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 5'}))
+    description = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}))
+    # description_1 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 1'}))
+    # price_1 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 1'}))
+    # description_2= forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 2'}))
+    # price_2 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 2'}))
+    # description_3 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 3'}))
+    # price_3 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 3'}))
+    # description_4 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 4'}))
+    # price_4 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 4'}))
+    # description_5 = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Description 5'}))
+    # price_5 = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price 5'}))
     price = forms.DecimalField(required=False, max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Price'}))
     hours_taken = forms.IntegerField(required=False, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hours Taken'}))
 
     class Meta:
         model = SubSubcategory
-        fields = ['name', 'subcategory', 'image', 'description_1', 'price_1', 'description_2', 'price_2', 'description_3', 'price_3', 'description_4', 'price_4', 'description_5', 'price_5', 'hours_taken']
+        fields = ['name', 'subcategory', 'image',  'price','hours_taken']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'SubSubcategory Name'}),
             'subcategory': forms.Select(attrs={'class': 'form-control'}),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        subcategory = cleaned_data.get('subcategory')
+
+        # Check if a subsubcategory with the same name and subcategory already exists
+        if SubSubcategory.objects.filter(name=name, subcategory=subcategory).exists():
+            raise forms.ValidationError('A subsubcategory with the same name and subcategory already exists.')
+
+        # Check if the maximum number of entries (e.g., 5) has been reached
+        if SubSubcategory.objects.count() >= 5:
+            raise forms.ValidationError('You cannot add more than 5 subsubcategories.')
+
+        return cleaned_data
 
 
 class CarModelForm(forms.ModelForm):
@@ -166,6 +229,23 @@ class CarModelForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Car Model Name'}),
             'image': forms.FileInput(attrs={'class': 'form-control-file'})
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        image = cleaned_data.get('image')
+
+        # Check if a car model with the same name already exists
+        if CarModel.objects.filter(name=name).exists():
+            raise forms.ValidationError('A car model with the same name already exists.')
+
+        # Check if the maximum number of entries (e.g., 5) has been reached
+        if CarModel.objects.count() >= 5:
+            raise forms.ValidationError('You cannot add car models.')
+
+        # Check if the uploaded file is an image
+
+
+        return cleaned_data
 class CarNameForm(forms.ModelForm):
     class Meta:
         model = CarName
@@ -177,6 +257,21 @@ class CarNameForm(forms.ModelForm):
         self.fields['car_model'].queryset = CarModel.objects.all()
 
     name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data.get('name')
+        car_model = cleaned_data.get('car_model')
+
+        # Check if a car name with the same name and car model already exists
+        if CarName.objects.filter(name=name, car_model=car_model).exists():
+            raise forms.ValidationError('A car name with the same name and car model already exists.')
+
+        # Check if the maximum number of entries (e.g., 5) has been reached
+        if CarName.objects.count() >= 5:
+            raise forms.ValidationError('You cannot add  car names.')
+
+        return cleaned_data
 
 
 class TypeForm(forms.ModelForm):
@@ -199,13 +294,7 @@ class TypeForm(forms.ModelForm):
 
         return cleaned_data
 
-    def clean_name(self):
-        name = self.cleaned_data['name']
-        # Add your custom validation logic for the 'name' field here
-        # For example, you can check if the name meets certain criteria
-        if len(name) < 3:
-            raise forms.ValidationError('Name must be at least 3 characters long.')
-        return name
+
 
     def clean_image(self):
         image = self.cleaned_data.get('image')
@@ -254,10 +343,13 @@ class TypeForm(forms.ModelForm):
 #             }),
             
 #         }
+            
+from django.core.exceptions import ValidationError
 class BookingForm(forms.ModelForm):
+    
     class Meta:
         model = Booking
-        fields = ['appointment_date', 'name', 'address', 'Alternative_mobile','payment_method']
+        fields = ['appointment_date', 'name', 'address', 'Alternative_mobile','payment_method','pickup_service']
         widgets = {
             'appointment_date': forms.DateInput(attrs={
                 'type': 'date',
@@ -269,7 +361,8 @@ class BookingForm(forms.ModelForm):
                 'class': 'form-control',  # Add Bootstrap class for styling
             }),
             'address': forms.Textarea(attrs={
-                'class': 'form-control',  # Add Bootstrap class for styling
+                'class': 'form-control',
+                  'placeholder': 'Enter please valid address ',  # Add Bootstrap class for styling
                 'rows': 3,
                 'cols': 30,
             }),
@@ -283,6 +376,10 @@ class BookingForm(forms.ModelForm):
         payment_method = forms.ChoiceField(
         choices=Booking.PAYMENT_CHOICES,  # Provide the choices from your model
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),  # Render as a dropdown
+    )
+        pickup_service = forms.ChoiceField(
+        choices=Booking.PICKUP_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
     )
     def clean_appointment_date(self):
         appointment_date = self.cleaned_data.get('appointment_date')
@@ -298,5 +395,23 @@ class BookingForm(forms.ModelForm):
                 raise ValidationError("Sundays are not allowed for appointments!  please select another date")
         
         return appointment_date
+    
+    def clean_address(self):
+        address = self.cleaned_data.get('address')
+
+        # Your custom validation logic for the address field
+        if not address:
+            raise ValidationError("Address field is required")
+
+        return address
+
+    def clean_Alternative_mobile(self):
+        mobile_number = self.cleaned_data.get('Alternative_mobile')
+
+        # Your custom validation logic for the mobile number field
+        if not mobile_number:
+            raise ValidationError("Mobile number is required")
+
+        return mobile_number
 
 

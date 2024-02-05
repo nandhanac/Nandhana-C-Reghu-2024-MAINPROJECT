@@ -24,6 +24,7 @@
                     <th>Alternative Mobile</th>
                     <th>Selected Subsubcategory</th>
                     <th>Selected Service Price</th>
+                    <th>Mode</th>
                     {% comment %} <th>Car Model</th>
         <th>Car Name</th>
         <th>Car Type</th> {% endcomment %}
@@ -46,6 +47,17 @@
                     {% comment %} <td> {{ booking.selected_car_model }}</td>
         <td> {{ booking.selected_car_name }}</td>
         <td>{{ booking.selected_type }}</td> {% endcomment %}
+        <td>
+            {% if booking.pickup_service == 'Yes' %}
+                {% if booking.status == 'Pending' %}
+                    <a href="{% url 'assign-driver' booking.id %}" class="btn btn-primary">Assign Driver</a>
+                {% else %}
+                    Assigned
+                {% endif %}
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
         <td>{{ booking.get_payment_method_display }}</td>
                     <td>{{ booking.status }}</td>
                   <td><a  style="color:red; text-decoration:none;font-size:25px;" href="{% url 'change-status' booking.id  %}">&#9998;</a></td>

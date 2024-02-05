@@ -55,30 +55,8 @@ def service_one(request):
     subsubcategories = SubSubcategory.objects.all()
     car_models = CarModel.objects.all()
     return render(request, 'website/service_one.html', {'subsubcategories': subsubcategories,'car_models': car_models})
-    # return render(request, 'website/service.html')
-# def service_two(request):
-#     # Filter subsubcategories with front_side=True
-#     front_subsubcategories = SubSubcategory.objects.filter(front_side=True)[:2]  # Limit to 2 items
 
-#     return render(request, 'website/service_two.html', {'subsubcategories': front_subsubcategories})
-
-# def service_two(request, category_id):
-#     # Retrieve the category based on the category_id
-#     category = get_object_or_404(Category, id=category_id)
-#     print(category)
-#     # Retrieve the subcategories and subsubcategories associated with the category
-#     subcategories = Subcategory.objects.filter(category=category)
-#     print(subcategories)
-#     subsubcategories = SubSubcategory.objects.filter(subcategory__category=category)
-#     print(subsubcategories)
-#     # Pass the category, subcategories, and subsubcategories to the template
-#     context = {
-#         'category': category,
-#         'subcategories': subcategories,
-#         'subsubcategories': subsubcategories,
-#     }
-
-#     return render(request, 'website/service_two.html', context)
+  
 
 
 def service_two(request, category_id):
@@ -348,6 +326,29 @@ def is_mechanic(user):
 #         return redirect('admin-dashboard')
 
 
+# @login_required
+# def afterlogin_view(request):
+#     if is_customer(request.user):
+#         # Redirect customer to 'users-home'
+#         return redirect('users-home')
+#     elif request.user.is_superuser:
+#         # Redirect admin to 'admin-dashboard'
+#         return redirect('admin-dashboard')
+#     elif is_mechanic(request.user):
+#         mechanic = models.Mechanic.objects.filter(user=request.user).first()
+#         if mechanic.job_title == models.Mechanic.DRIVER:
+#             # Redirect delivery driver to 'driver-dashboard'
+#             return redirect('driver-dashboard')
+#         elif mechanic.status:
+#             # Redirect approved mechanic to 'mechanic-dashboard'
+#             return redirect('mechanic-dashboard')
+#         else:
+#             # Handle the case where a mechanic is not approved
+#             return render(request, 'vehicle/mechanic_wait_for_approval.html')
+#     else:
+#         # Handle any other cases or roles
+#         return redirect('users-home') 
+
 @login_required
 def afterlogin_view(request):
     if is_customer(request.user):
@@ -357,17 +358,50 @@ def afterlogin_view(request):
         # Redirect admin to 'admin-dashboard'
         return redirect('admin-dashboard')
     elif is_mechanic(request.user):
-        # Redirect employee (mechanic) to 'mechanic-dashboard'
-        account_approval = models.Mechanic.objects.filter(user_id=request.user.id, status=True).first()
-        if account_approval:
+        mechanic = models.Mechanic.objects.filter(user=request.user).first()
+        if mechanic.job_title == models.Mechanic.DRIVER:
+            # Redirect delivery driver to 'driver-dashboard'
+            if mechanic.status:
+                return redirect('driver-dashboard')
+            else:
+                # Handle the case where a driver is not approved
+                return render(request, 'vehicle/mechanic_wait_for_approval.html')
+        elif mechanic.status:
+            # Redirect approved mechanic to 'mechanic-dashboard'
             return redirect('mechanic-dashboard')
         else:
             # Handle the case where a mechanic is not approved
             return render(request, 'vehicle/mechanic_wait_for_approval.html')
     else:
         # Handle any other cases or roles
-        return redirect('users-home')  # Set an appropriate default URL
+        return redirect('users-home')
 
+
+
+@login_required
+def driver_dashboard(request):
+    # Your logic for the delivery driver dashboard
+    return render(request, 'vehicle/deliverydriver_dash.html')
+
+
+from .forms import AssignDriverForm
+
+def assign_driver_view(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    if request.method == 'POST':
+        form = AssignDriverForm(request.POST)
+        if form.is_valid():
+            selected_driver = form.cleaned_data['driver']
+            # Implement the logic to assign the selected driver to the booking
+            # You can update the 'driver' field or any other field in the Booking model
+            booking.driver = selected_driver
+            booking.save()
+            return redirect('admin-view-request')  # Redirect back to the admin view after assigning the driver
+    else:
+        form = AssignDriverForm()
+
+    return render(request, 'vehicle/admin_assigndriver.html', {'form': form, 'booking': booking})
 
 #============================================================================================
 # ADMIN RELATED views start
@@ -701,22 +735,27 @@ def delete_mechanic_view(request,pk):
 
 
 @login_required(login_url='adminlogin')
-def update_mechanic_view(request,pk):
-    mechanic=models.Mechanic.objects.get(id=pk)
-    user=models.User.objects.get(id=mechanic.user_id)
-    userForm=forms.MechanicUserForm(instance=user)
-    mechanicForm=forms.MechanicForm(request.FILES,instance=mechanic)
-    mydict={'userForm':userForm,'mechanicForm':mechanicForm}
-    if request.method=='POST':
-        userForm=forms.MechanicUserForm(request.POST,instance=user)
-        mechanicForm=forms.MechanicForm(request.POST,request.FILES,instance=mechanic)
+def update_mechanic_view(request, pk):
+    mechanic = models.Mechanic.objects.get(id=pk)
+    user = models.User.objects.get(id=mechanic.user_id)
+
+    if request.method == 'POST':
+        userForm = forms.MechanicUserForm(request.POST, instance=user)
+        mechanicForm = forms.MechanicForm(request.POST, request.FILES, instance=mechanic)
+
         if userForm.is_valid() and mechanicForm.is_valid():
-            user=userForm.save()
+            user = userForm.save()
             user.set_password(user.password)
             user.save()
             mechanicForm.save()
             return redirect('admin-view-mechanic')
-    return render(request,'vehicle/update_mechanic.html',context=mydict)
+    else:
+        userForm = forms.MechanicUserForm(instance=user)
+        mechanicForm = forms.MechanicForm(instance=mechanic)
+
+    mydict = {'userForm': userForm, 'mechanicForm': mechanicForm}
+    return render(request, 'vehicle/update_mechanic.html', context=mydict)
+
 
 @login_required(login_url='adminlogin')
 def admin_view_mechanic_salary_view(request):
@@ -1197,17 +1236,23 @@ def book_service(request, subsubcategory_id):
     # car_name = get_object_or_404(CarName, pk=car_name_id)
     # type = get_object_or_404(Type, pk=type_id)
 
+    
+
     if request.method == 'POST':
-        form = BookingForm(request.POST,request.FILES)
+        form = BookingForm(request.POST, request.FILES)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.selected_subsubcategory = subsubcategory
             booking.customer = customer
-            # booking.selected_car_model = car_model
-            # booking.selected_car_name = car_name
-            # booking.selected_type = type
             booking.name = request.user.first_name
+            booking.selected_service_price = subsubcategory.price
+           
+           
             booking.save()
+
+            if booking.pickup_service == 'Yes':
+                # Handle pickup service logic here
+                pass
             if booking.payment_method == 'Cash':
                 return redirect('bookconfirm_cash', booking.id)
             elif booking.payment_method == 'Online':

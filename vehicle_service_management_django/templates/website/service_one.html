@@ -217,7 +217,8 @@
 													</ul>
 													<h4 id="totalPrice">Total Price: Rs- 0.00</h4>
 												</div>
-												<input type="hidden" id="hiddenTotalPrice" name="hiddenTotalPrice" value="0">
+
+
 											</div>
 											<div class="clinic-booking">
 												
@@ -262,32 +263,41 @@
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 		
 		
-			// Function to calculate and update the total price
-			<script>
-				// Function to calculate and update the total price
-				function updateTotalPrice() {
-					var total = 0;
-			
-					// Iterate through each checked description checkbox and add its price to the total
-					$('input[type="checkbox"]:checked').each(function () {
-						total += parseFloat($(this).data('price')) || 0;
-					});
-			
-					// Update the total price element on the page
-					$('#totalPrice').text(' Rs-' + total.toFixed(2));
-			
-					// Set the value of the hidden input field
-					$('#hiddenTotalPrice').val(total);
-				}
-			
-				// Bind the updateTotalPrice function to the change event of description checkboxes
-				$('input[type="checkbox"]').change(function () {
-					updateTotalPrice();
-				});
-			
-				// Trigger the initial calculation on page load
-				updateTotalPrice();
-			</script>
+		
+<script>
+	function updateTotalPrice() {
+        // Log the entire subsubcategory object to the console
+        console.log('Subsubcategory Object:', JSON.stringify({{ subsubcategory|safe }}));
+
+        var subsubcategoryPrice = parseFloat('{{ subsubcategory.price }}') || 0;
+        var total = subsubcategoryPrice;
+
+        // Iterate through each checked description checkbox and add its price to the total
+        $('input[type="checkbox"]:checked').each(function () {
+            total += parseFloat($(this).data('price')) || 0;
+        });
+
+        // Log the selected description price to the console
+        console.log('Selected Description Price:', subsubcategoryPrice.toFixed(2));
+
+        // Update the total price element on the page
+        $('#totalPrice').text(' Rs-' + total.toFixed(2));
+
+        // Set the value of the hidden input field
+        $('#hiddenTotalPrice').val(total);
+    }
+
+    // Bind the updateTotalPrice function to the change event of description checkboxes
+    $('input[type="checkbox"]').change(function () {
+        updateTotalPrice();
+    });
+
+    // Trigger the initial calculation on page load
+    $(document).ready(function () {
+        updateTotalPrice();
+    });
+	</script>
+
 	</body>
 
 </html>

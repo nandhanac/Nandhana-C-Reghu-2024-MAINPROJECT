@@ -63,7 +63,8 @@
                   {% comment %} <th>Profile Picture</th> {% endcomment %}
                   <th>Mobile</th>
                   <th>Address</th>
-                  <th>Skills</th>
+                  <th>Job Tittle</th>
+                  <th>Qualification Certificate</th>
                   <th>Salary</th>
                   <th width="7%"></th>
                 </tr>
@@ -75,7 +76,12 @@
                   {% comment %} <td> <img src="{% static m.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td> {% endcomment %}
                   <td>{{m.mobile}}</td>
                   <td>{{m.address}}</td>
-                  <td>{{m.skill}}</td>
+                  <td>{{m.job_title}}</td>
+                  <td>  {% if m.qualification_certificate %}
+                    <a href="{{ m.qualification_certificate.url }}" target="_blank">View Certificate</a>
+                {% else %}
+                    N/A
+                {% endif %}</td>
                   <td>{{m.salary}}</td>
                   <td><a href="{% url 'update-mechanic' m.id  %}"><button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#edit"><i class="fa fa-edit"></i></button></a> <a href="{% url 'delete-mechanic' m.id  %}"><button class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></a></td>
                 </tr>

@@ -167,11 +167,12 @@ class Booking(models.Model):
     selected_car_model = models.ForeignKey(CarModel, on_delete=models.CASCADE, null=True)
     selected_car_name = models.ForeignKey(CarName, on_delete=models.CASCADE, null=True)
     selected_type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True)
-    
+    pincode = models.CharField(max_length=10, null=True, blank=True)
     stat=(('Pending','Pending'),('Approved','Approved'),('Repairing','Repairing'),('Repairing Done','Repairing Done'),('Released','Released'))
     status=models.CharField(max_length=50,choices=stat,default='Pending',null=True)
     customer=models.ForeignKey(Customer, on_delete=models.CASCADE,null=True)
     mechanic=models.ForeignKey('Mechanic',on_delete=models.CASCADE,null=True)
+    driver = models.ForeignKey(Mechanic, on_delete=models.CASCADE, related_name='assigned_bookings', null=True, blank=True)
 
     PAYMENT_CHOICES = [
         ('Cash', 'Cash on Service'),

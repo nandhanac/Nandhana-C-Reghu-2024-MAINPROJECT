@@ -393,8 +393,6 @@ def assign_driver_view(request, booking_id):
         form = AssignDriverForm(request.POST)
         if form.is_valid():
             selected_driver = form.cleaned_data['driver']
-            # Implement the logic to assign the selected driver to the booking
-            # You can update the 'driver' field or any other field in the Booking model
             booking.driver = selected_driver
             booking.save()
             return redirect('admin-view-request')  # Redirect back to the admin view after assigning the driver
@@ -402,6 +400,12 @@ def assign_driver_view(request, booking_id):
         form = AssignDriverForm()
 
     return render(request, 'vehicle/admin_assigndriver.html', {'form': form, 'booking': booking})
+
+def assigned_bookings_view(request):
+    assigned_bookings = request.user.mechanic.assigned_bookings.all()
+    return render(request, 'vehicle/assigned_bookings.html', {'assigned_bookings': assigned_bookings})
+
+
 
 #============================================================================================
 # ADMIN RELATED views start
@@ -566,15 +570,6 @@ def car_models(request):
         form = CarModelForm()
 
     return render(request, 'vehicle/admin_selectcar.html', {'car_models': car_models, 'form': form})
-
-
-
-
-
-
-
-
-
 
 
 @login_required(login_url='adminlogin')
@@ -1011,6 +1006,9 @@ def customer_delete_request_view(request,pk):
 def customer_view_approved_request_view(request):
     customer = models.Customer.objects.get(user=request.user)
     booking = models.Booking.objects.filter(customer=customer).exclude(status="Pending")
+    for book in booking:
+        print(book.driver)  # Check if this prints the assigned driver's name
+
     return render(request,'vehicle/customer_view_approved_request.html',{'customer':customer,'booking':booking})
 
 @login_required(login_url='customerlogin')

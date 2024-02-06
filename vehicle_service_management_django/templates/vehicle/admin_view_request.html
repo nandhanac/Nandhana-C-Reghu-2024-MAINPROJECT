@@ -50,7 +50,7 @@
         <td>
             {% if booking.pickup_service == 'Yes' %}
                 {% if booking.status == 'Pending' %}
-                    <a href="{% url 'assign-driver' booking.id %}" class="btn btn-primary">Assign Driver</a>
+                    <a href="{% url 'assign-driver' booking.id %}" class="btn btn-primary"style="text-decoration:none;">Assign Driver</a>
                 {% else %}
                     Assigned
                 {% endif %}

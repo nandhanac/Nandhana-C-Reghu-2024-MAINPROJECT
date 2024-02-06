@@ -349,7 +349,7 @@ class BookingForm(forms.ModelForm):
     
     class Meta:
         model = Booking
-        fields = ['appointment_date', 'name', 'address', 'Alternative_mobile','payment_method','pickup_service']
+        fields = ['appointment_date', 'name', 'address','pincode', 'Alternative_mobile','payment_method','pickup_service']
         widgets = {
             'appointment_date': forms.DateInput(attrs={
                 'type': 'date',
@@ -362,9 +362,14 @@ class BookingForm(forms.ModelForm):
             }),
             'address': forms.Textarea(attrs={
                 'class': 'form-control',
-                  'placeholder': 'Enter please valid address ',  # Add Bootstrap class for styling
+                  'placeholder': 'Enter please valid address  ',  # Add Bootstrap class for styling
                 'rows': 3,
                 'cols': 30,
+            }),
+            'pincode': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter a 6-digit pincode',  # Placeholder text
+                'pattern': '6[0-9]{5}',  # Pattern for 6-digit pincode starting with 6
             }),
             'Alternative_mobile': forms.TextInput(attrs={
                 'class': 'form-control',  # Add Bootstrap class for styling
@@ -413,5 +418,16 @@ class BookingForm(forms.ModelForm):
             raise ValidationError("Mobile number is required")
 
         return mobile_number
+    def clean_pincode(self):
+        pincode = self.cleaned_data.get('pincode')
+        allowed_pincodes = ['686505', '686502', '686503','686506']  # Example list of allowed pincodes
+
+        if pincode not in allowed_pincodes:
+            self.cleaned_data['pickup_service'] = 'No'  # Set pickup service to 'No'
+            raise ValidationError('Sorry, pickup service is not available for this pincode.')
+
+        # If the pincode matches, set pickup service to 'Yes'
+        self.cleaned_data['pickup_service'] = 'Yes'
+        return pincode
 
 

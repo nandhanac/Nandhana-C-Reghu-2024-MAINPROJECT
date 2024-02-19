@@ -161,12 +161,7 @@
 												{{ form.address }}
 											</div>
 										</div>
-										<div class="col-md-6 col-sm-12">
-											<div class="form-group card-label">
-												<label for="{{ form.pincode.id_for_label }}">Pincode</label>
-												{{ form.pincode }}
-											</div>
-										</div>
+										
 										
 										<div class="col-md-6 col-sm-12">
 											<div class="form-group card-label">
@@ -193,6 +188,11 @@
 		{{ form.pickup_service }} 
 		<span id="pickup-service-message" style="color: red;"></span>
     </div>
+</div><div class="col-md-6 col-sm-12">
+	<div class="form-group card-label">
+		<label for="{{ form.pincode.id_for_label }}">Place</label>
+		{{ form.pincode }}
+	</div>
 </div>
 
 										<!-- Add other form fields here -->
@@ -301,17 +301,37 @@
 			  }
 			
 		</script>
-
 		<script>
-			// Script to display pickup service message based on pincode
+			// Script to display pickup service message based on pincode and enable/disable pincode field
 			document.addEventListener('DOMContentLoaded', function() {
 				var pincodeField = document.getElementById("{{ form.pincode.id_for_label }}");
+				var pickupServiceField = document.getElementById("{{ form.pickup_service.id_for_label }}");
+		
 				var pickupServiceMessage = document.getElementById("pickup-service-message");
 		
+				function togglePincodeField() {
+					if (pickupServiceField.value === "Yes") {
+						pincodeField.removeAttribute("disabled");
+					} else {
+						pincodeField.setAttribute("disabled", "disabled");
+						pincodeField.value = ""; // Clear the pincode field value
+						pickupServiceMessage.textContent = ""; // Clear the message when pickup service is set to "No"
+					}
+				}
+		
+				// Initial toggle based on pickup service selection
+				togglePincodeField();
+		
+				// Add change event listener to pickup service field
+				pickupServiceField.addEventListener('change', function() {
+					togglePincodeField();
+				});
+		
+				// Add change event listener to pincode field to display pickup service message
 				pincodeField.addEventListener('change', function() {
 					var selectedPincode = pincodeField.value;
 					// Check if the pincode is not in the allowed list
-					if (!['686505', '686503', '686502','686506'].includes(selectedPincode)) {
+					if (!['Ponkunnam', 'Kanjirappally'].includes(selectedPincode)) {
 						pickupServiceMessage.textContent = "Sorry, pickup service is not available for this pincode.";
 					} else {
 						pickupServiceMessage.textContent = ""; // Clear the message if the pincode is allowed
@@ -319,6 +339,7 @@
 				});
 			});
 		</script>
+		
 	</body>
 
 </html>

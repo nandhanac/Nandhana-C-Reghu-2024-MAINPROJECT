@@ -32,7 +32,8 @@ def home_view(request):
 #     return render(request, 'vehicle/customerpage.html', context)
 def about(request):
      return render(request, 'website/about.html')
-
+@login_required(login_url='customerlogin')
+@user_passes_test(Customer)
 def home(request):
     diagnostic_category= Category.objects.get(name="Diagnostic Test")
     denting_painting_category = Category.objects.get(name="Denting & Painting")
@@ -386,6 +387,25 @@ def driver_dashboard(request):
 
 from .forms import AssignDriverForm
 
+# def assign_driver_view(request, booking_id):
+#     booking = get_object_or_404(Booking, id=booking_id)
+
+#     if request.method == 'POST':
+#         form = AssignDriverForm(request.POST)
+#         if form.is_valid():
+#             selected_driver = form.cleaned_data['driver']
+#             booking.driver = selected_driver
+#             booking.save()
+#             return redirect('admin-view-request')  # Redirect back to the admin view after assigning the driver
+#     else:
+#         form = AssignDriverForm()
+
+#     return render(request, 'vehicle/admin_assigndriver.html', {'form': form, 'booking': booking})
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+@login_required
 def assign_driver_view(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
 
@@ -395,11 +415,22 @@ def assign_driver_view(request, booking_id):
             selected_driver = form.cleaned_data['driver']
             booking.driver = selected_driver
             booking.save()
+
+            # Send email notification to the assigned driver
+            subject = 'You have been assigned a new booking'
+            context = {'booking': booking}
+            html_message = render_to_string('email/booking_notification.html', context)
+            plain_message = strip_tags(html_message)
+            from_email = 'nandhanacreghu2024@ajce.in'  # Update with your email
+            to_email = 'nandhanareghu8333@gmail.com'
+            send_mail(subject, plain_message, from_email, [to_email], html_message=html_message)
+
             return redirect('admin-view-request')  # Redirect back to the admin view after assigning the driver
     else:
         form = AssignDriverForm()
 
     return render(request, 'vehicle/admin_assigndriver.html', {'form': form, 'booking': booking})
+
 
 def assigned_bookings_view(request):
     assigned_bookings = request.user.mechanic.assigned_bookings.all()
@@ -1227,14 +1258,47 @@ def contactus_view(request):
 
 
 
+# def book_service(request, subsubcategory_id):
+#     subsubcategory = get_object_or_404(SubSubcategory, pk=subsubcategory_id)
+#     customer = Customer.objects.get(user=request.user)
+#     # car_model = get_object_or_404(CarModel, pk=car_model_id)
+#     # car_name = get_object_or_404(CarName, pk=car_name_id)
+#     # type = get_object_or_404(Type, pk=type_id)
+
+    
+
+#     if request.method == 'POST':
+#         form = BookingForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             booking = form.save(commit=False)
+#             booking.selected_subsubcategory = subsubcategory
+#             booking.customer = customer
+#             booking.name = request.user.first_name
+#             booking.selected_service_price = subsubcategory.price
+           
+           
+#             booking.save()
+
+#             if booking.pickup_service == 'Yes':
+#                 # Handle pickup service logic here
+#                 pass
+#             if booking.payment_method == 'Cash':
+#                 return redirect('bookconfirm_cash', booking.id)
+#             elif booking.payment_method == 'Online':
+#                 # Redirect to the payment page for online payment
+#                 # Replace 'payment_page' with your actual payment page URL
+#                 return redirect('payment_confirmation')
+            
+#     else:
+#         # form = BookingForm()
+#         form = BookingForm(initial={'name': request.user.first_name})
+#     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
+
+from django.shortcuts import redirect
+@login_required(login_url='customerlogin')
 def book_service(request, subsubcategory_id):
     subsubcategory = get_object_or_404(SubSubcategory, pk=subsubcategory_id)
     customer = Customer.objects.get(user=request.user)
-    # car_model = get_object_or_404(CarModel, pk=car_model_id)
-    # car_name = get_object_or_404(CarName, pk=car_name_id)
-    # type = get_object_or_404(Type, pk=type_id)
-
-    
 
     if request.method == 'POST':
         form = BookingForm(request.POST, request.FILES)
@@ -1244,32 +1308,37 @@ def book_service(request, subsubcategory_id):
             booking.customer = customer
             booking.name = request.user.first_name
             booking.selected_service_price = subsubcategory.price
-           
-           
+
+            # Check if pickup service is set to "No" and pincode field is disabled
+            if booking.pickup_service == 'No' and form.fields['pincode'].widget.attrs.get('disabled'):
+                booking.save()
+                return redirect('success_page')  # Redirect to success page or any other page
+            else:
+                # Handle pickup service logic here if needed
+                pass
+
             booking.save()
 
             if booking.pickup_service == 'Yes':
                 # Handle pickup service logic here
                 pass
+
             if booking.payment_method == 'Cash':
                 return redirect('bookconfirm_cash', booking.id)
             elif booking.payment_method == 'Online':
-                # Redirect to the payment page for online payment
-                # Replace 'payment_page' with your actual payment page URL
                 return redirect('payment_confirmation')
-            
+
     else:
-        # form = BookingForm()
         form = BookingForm(initial={'name': request.user.first_name})
+
     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
 
 
-
-
+@login_required(login_url='customerlogin')
 def booking_confirmation(request, booking_id,payment_amount):
     booking = get_object_or_404(Booking, pk=booking_id)
     return render(request, 'website/booking_confirmation.html',{'booking': booking,'payment_amount':payment_amount})
-
+@login_required(login_url='customerlogin')
 def bookconfirm_cash(request, booking_id):
     booking = get_object_or_404(Booking, pk=booking_id)
     return render(request, 'website/bookconfirm_cash.html',{'booking': booking})

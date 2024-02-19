@@ -149,6 +149,7 @@ path('delete-subsubcategory/<int:subsubcategory_id>/', views.delete_subsubcatego
     path('driver-dashboard/', views.driver_dashboard, name='driver-dashboard'),
     path('assigned-bookings/', views.assigned_bookings_view, name='assigned-bookings'),
     path('assign-driver/<int:booking_id>/', views.assign_driver_view, name='assign-driver'),
+    path('send_email_to_driver/<int:booking_id>/', views.assign_driver_view, name='send_email_to_driver'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

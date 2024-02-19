@@ -323,7 +323,94 @@
         </div>
     </div>
     <!-- About End -->
-
+    <section id="section1">
+        <!-- Team Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                    {% comment %} <h6 class="text-primary text-uppercase">// Our Technicians //</h6> {% endcomment %}
+                    <h1 class="mb-5">Our Service Avaliable</h1>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                       
+                        <div class="team-item">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="img/team-1.jpg" alt="">
+                                <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                </div>
+                            </div> <a href="{%url 'service_one'%}"> 
+                            <div class="bg-light text-center p-4">
+                                <h5 class="fw-bold mb-0">{{diagnostic_category}}</h5><br>
+                                <img class="img-fluid" src="{% static 'images/ser1.png' %}" alt="" style="width:50px;height:60px;">
+                            
+                            </div>
+                        </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="team-item">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="img/team-2.jpg" alt="">
+                                <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                </div>
+                            </div>
+                            <a href="{% url 'service_two' category_id=category_id   %}"> 
+                            <div class="bg-light text-center p-4">
+                                <h5 class="fw-bold mb-0">{{ denting_painting_category_name }}</h5>
+                                <br>
+                                <img class="img-fluid" src="{% static 'images/ser2.png' %}" alt="" style="width:50px;height:60px;">
+                            </div>
+                        </div></a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                        <div class="team-item">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="img/team-3.jpg" alt="">
+                                <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                </div>
+                            </div>
+                            <a href="{% url 'service_three'   %}"> 
+                            <div class="bg-light text-center p-4">
+                                <h5 class="fw-bold mb-0">{{ car_spa_category_name }}</h5>
+                                <br>
+                                <img class="img-fluid" src="{% static 'images/ser3.png' %}" alt="" style="width:50px;height:60px;">
+                            </div>
+                        </div></a>
+                    </div>
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                        <div class="team-item">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="img/team-4.jpg" alt="">
+                                <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
+                                    <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a> 
+                                </div>
+                            </div>
+                            <a href="{% url 'service_four'   %}"> 
+                            <div class="bg-light text-center p-4">
+                                <h5 class="fw-bold mb-0">{{ detailing_category_name }}</h5>
+                                <br>
+                                <img class="img-fluid" src="{% static 'images/ser4.png' %}" alt="" style="width:50px;height:60px;">
+                            </div>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Team End -->
+    
+    </section>
 
     <!-- Fact Start -->
     <div class="container-fluid fact bg-dark my-5 py-5">
@@ -356,7 +443,7 @@
 
 
     <!-- Service Start -->
-    <div class="container-xxl service py-5">
+    {% comment %} <div class="container-xxl service py-5">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <h6 class="text-primary text-uppercase">// Our Services //</h6>
@@ -465,7 +552,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
     <!-- Service End -->
 
 
@@ -520,94 +607,7 @@
     </div> {% endcomment %}
     <!-- Booking End -->
 
-    <section id="section1">
-    <!-- Team Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                {% comment %} <h6 class="text-primary text-uppercase">// Our Technicians //</h6> {% endcomment %}
-                <h1 class="mb-5">Our Service Avaliable</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                   
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team-1.jpg" alt="">
-                            <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                            </div>
-                        </div> <a href="{%url 'service_one'%}"> 
-                        <div class="bg-light text-center p-4">
-                            <h5 class="fw-bold mb-0">{{diagnostic_category}}</h5><br>
-                            <img class="img-fluid" src="{% static 'images/ser1.png' %}" alt="" style="width:50px;height:60px;">
-                        
-                        </div>
-                    </a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team-2.jpg" alt="">
-                            <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                            </div>
-                        </div>
-                        <a href="{% url 'service_two' category_id=category_id   %}"> 
-                        <div class="bg-light text-center p-4">
-                            <h5 class="fw-bold mb-0">{{ denting_painting_category_name }}</h5>
-                            <br>
-                            <img class="img-fluid" src="{% static 'images/ser2.png' %}" alt="" style="width:50px;height:60px;">
-                        </div>
-                    </div></a>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team-3.jpg" alt="">
-                            <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                            </div>
-                        </div>
-                        <a href="{% url 'service_three'   %}"> 
-                        <div class="bg-light text-center p-4">
-                            <h5 class="fw-bold mb-0">{{ car_spa_category_name }}</h5>
-                            <br>
-                            <img class="img-fluid" src="{% static 'images/ser3.png' %}" alt="" style="width:50px;height:60px;">
-                        </div>
-                    </div></a>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team-4.jpg" alt="">
-                            <div class="team-overlay position-absolute start-0 top-0 w-100 h-100">
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fas fa-tools"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fa fa-plus-square"></i></a> 
-                            </div>
-                        </div>
-                        <a href="{% url 'service_four'   %}"> 
-                        <div class="bg-light text-center p-4">
-                            <h5 class="fw-bold mb-0">{{ detailing_category_name }}</h5>
-                            <br>
-                            <img class="img-fluid" src="{% static 'images/ser4.png' %}" alt="" style="width:50px;height:60px;">
-                        </div>
-                    </div></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Team End -->
-
-</section>
+    
     <!-- Testimonial Start -->
     {% comment %} <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
         <div class="container">
@@ -652,7 +652,9 @@
         </div>
     </div> {% endcomment %}
     <!-- Testimonial End -->
-
+    <div class="workshop-location">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m22!1m12!1m3!1d125899.93837137497!2d76.69243218946248!3d9.563072592637866!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m7!3e6!4m0!4m4!2s9.5630717%2C76.7748234!3m2!1d9.5630717!2d76.7748234!5e0!3m2!1sen!2sin!4v1707800107248!5m2!1sen!2sin" width="900" height="450" style="border:0;margin-left:350px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">

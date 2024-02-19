@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assigned Booking Notification</title>
+</head>
+<body>
+    <p>Hello {{ book.driver }},</p>
+    
+    <p>You have been assigned a new booking. Please log in to the driver dashboard to view the details.</p>
+
+    <p>Customer: {{booking.name}}</p>
+    <p>Location:  {{booking.address}}</p>
+    <p>Place:   {{booking.pincode}}</p>
+
+    <p>Thank you,</p>
+    <p>Splash Paintzone</p>
+</body>
+</html>

@@ -382,7 +382,19 @@ def afterlogin_view(request):
 @login_required
 def driver_dashboard(request):
     # Your logic for the delivery driver dashboard
-    return render(request, 'vehicle/deliverydriver_dash.html')
+    mechanic=models.Mechanic.objects.get(user_id=request.user.id)
+    work_in_progress=models.Request.objects.all().filter(mechanic_id=mechanic.id,status='Repairing').count()
+    work_completed=models.Request.objects.all().filter(mechanic_id=mechanic.id,status='Repairing Done').count()
+    new_work_assigned = request.user.mechanic.assigned_bookings.count()
+    dict={
+    'work_in_progress':work_in_progress,
+    'work_completed':work_completed,
+    'new_work_assigned':new_work_assigned,
+    'salary':mechanic.salary,
+    'mechanic':mechanic,
+    }
+    
+    return render(request, 'vehicle/deliverydriver_dash.html', context=dict)
 
 
 from .forms import AssignDriverForm
@@ -434,10 +446,32 @@ def assign_driver_view(request, booking_id):
 
 def assigned_bookings_view(request):
     assigned_bookings = request.user.mechanic.assigned_bookings.all()
-    return render(request, 'vehicle/assigned_bookings.html', {'assigned_bookings': assigned_bookings})
+    new_work_assigned = assigned_bookings.count()
+    # Send a notification message to the driver dashboard
+    messages.info(request, 'You have new assigned bookings. Please check your dashboard for details.')
+    return render(request, 'vehicle/assigned_bookings.html', {'assigned_bookings': assigned_bookings,'new_work_assigned': new_work_assigned})
+    
+# def map_view(request):
+#     latitude = request.GET.get('lat')
+#     longitude = request.GET.get('lng')
+#     return render(request, 'vehicle/map.html', {'latitude': latitude, 'longitude': longitude})
 
+# def map_view(request):
+#     # Retrieve latitude and longitude from the request or any other source
+#     latitude = 40.7128  # Example latitude value
+#     longitude = -74.0060  # Example longitude value
 
+#     return render(request, 'vehicle/map.html', {'latitude': latitude, 'longitude': longitude})
 
+def map_view(request, booking_id):
+    # Retrieve the Booking object based on the booking_id
+    booking = Booking.objects.get(pk=booking_id)
+    
+    # Retrieve latitude and longitude from the Booking object
+    latitude = booking.latitude
+    longitude = booking.longitude
+
+    return render(request, 'vehicle/map.html', {'latitude': latitude, 'longitude': longitude})
 #============================================================================================
 # ADMIN RELATED views start
 #============================================================================================
@@ -1294,7 +1328,46 @@ def contactus_view(request):
 #         form = BookingForm(initial={'name': request.user.first_name})
 #     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
 
+
 from django.shortcuts import redirect
+# @login_required(login_url='customerlogin')
+# def book_service(request, subsubcategory_id):
+#     subsubcategory = get_object_or_404(SubSubcategory, pk=subsubcategory_id)
+#     customer = Customer.objects.get(user=request.user)
+
+#     if request.method == 'POST':
+#         form = BookingForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             booking = form.save(commit=False)
+#             booking.selected_subsubcategory = subsubcategory
+#             booking.customer = customer
+#             booking.name = request.user.first_name
+#             booking.selected_service_price = subsubcategory.price
+
+#             # Check if pickup service is set to "No" and pincode field is disabled
+#             if booking.pickup_service == 'No' and form.fields['pincode'].widget.attrs.get('disabled'):
+#                 booking.save()
+#                 return redirect('success_page')  # Redirect to success page or any other page
+#             else:
+#                 # Handle pickup service logic here if needed
+#                 pass
+
+#             booking.save()
+
+#             if booking.pickup_service == 'Yes':
+#                 # Handle pickup service logic here
+#                 pass
+
+#             if booking.payment_method == 'Cash':
+#                 return redirect('bookconfirm_cash', booking.id)
+#             elif booking.payment_method == 'Online':
+#                 return redirect('payment_confirmation')
+
+#     else:
+#         form = BookingForm(initial={'name': request.user.first_name})
+
+#     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
+
 @login_required(login_url='customerlogin')
 def book_service(request, subsubcategory_id):
     subsubcategory = get_object_or_404(SubSubcategory, pk=subsubcategory_id)
@@ -1309,30 +1382,27 @@ def book_service(request, subsubcategory_id):
             booking.name = request.user.first_name
             booking.selected_service_price = subsubcategory.price
 
+            
+
             # Check if pickup service is set to "No" and pincode field is disabled
-            if booking.pickup_service == 'No' and form.fields['pincode'].widget.attrs.get('disabled'):
+            if booking.pickup_service == 'No' and 'pincode' not in form.cleaned_data:
                 booking.save()
                 return redirect('success_page')  # Redirect to success page or any other page
             else:
-                # Handle pickup service logic here if needed
-                pass
+                booking.save()
 
-            booking.save()
+                if booking.pickup_service == 'Yes':
+                    # Handle pickup service logic here
+                    pass
 
-            if booking.pickup_service == 'Yes':
-                # Handle pickup service logic here
-                pass
-
-            if booking.payment_method == 'Cash':
-                return redirect('bookconfirm_cash', booking.id)
-            elif booking.payment_method == 'Online':
-                return redirect('payment_confirmation')
-
+                if booking.payment_method == 'Cash':
+                    return redirect('bookconfirm_cash', booking.id)
+                elif booking.payment_method == 'Online':
+                    return redirect('payment_confirmation')
     else:
         form = BookingForm(initial={'name': request.user.first_name})
 
     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
-
 
 @login_required(login_url='customerlogin')
 def booking_confirmation(request, booking_id,payment_amount):

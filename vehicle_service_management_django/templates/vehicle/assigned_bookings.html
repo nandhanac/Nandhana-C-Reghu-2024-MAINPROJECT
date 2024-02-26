@@ -9,7 +9,7 @@
 			<div class="col-12 col-m-12 col-sm-12">
 				<div class="card">
 					<div class="card-header">
-						<h3 style="color:red; text-align:center" >Vehicles To Repair & Update Status
+						<h3 style="color:red; text-align:center" >PICKUPSERVICE
 						</h3>
 
 					</div>
@@ -32,7 +32,13 @@
                   <td> {{booking.name}}</td>
                   <td> {{booking.appointment_date}}</td>
 				  <td> {{booking.address}}</td>
-				  <td> {{booking.pincode}}</td>
+				 <!-- Update the "Place" field to call the JavaScript function -->
+<td>
+    <a href="{%url 'map_view' booking.id%}" onclick="showMap({{ booking.latitude }}, {{ booking.longitude }})">
+        {{ booking.pincode }}
+    </a>
+</td>
+
                   <td> {{booking.selected_subsubcategory}}</td>
                   <td>{{booking.status}}</td>
                   <td><a  style="color:blue; text-decoration:none;font-size:25px;" href="{% url 'mechanic-update-status' booking.id  %}">&#9998;</a></td>
@@ -48,5 +54,15 @@
 <!-- ****** table start ********** -->
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 	</div>
+	<!-- Add this script to your HTML template -->
+<script>
+    function showMap(latitude, longitude) {
+        // Open a modal or navigate to a new view containing the map
+        // You can use libraries like Bootstrap modal or create a new Django view
+        // Pass the latitude and longitude as parameters to the view/modal
+        window.location.href = `/map?lat=${latitude}&lng=${longitude}`;
+    }
+</script>
+
 	<!-- end main content -->
 {% endblock content %}

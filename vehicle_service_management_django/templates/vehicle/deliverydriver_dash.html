@@ -7,15 +7,18 @@
 
 <!-- ****** cards start ********** -->
 		<div class="row">
+			
 			<div class="col-3 col-m-6 col-sm-6">
 				<div class="counter bg-primary">
 					<p>
 						<i class="fas fa-tasks"></i>
 					</p>
-					<h3>{{new_work_assigned}}</h3>
+					<h3 id="new-work-count">{{ new_work_assigned }}</h3>
 					<p>Delivery Assigned</p>
 				</div>
 			</div>
+		
+			
 			<div class="col-3 col-m-6 col-sm-6">
 				<div class="counter bg-warning">
 					<p>
@@ -61,6 +64,20 @@
 
 <!-- ****** cards end ********** -->
 
+<!-- Include Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<!-- Initialize tooltips -->
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var newWorkCount = document.getElementById('new-work-count');
+	
+		newWorkCount.addEventListener('click', function() {
+			alert('New booking assigned!');
+		});
+	});
+	</script>
 
 	<!-- end main content -->
 {% endblock content %}

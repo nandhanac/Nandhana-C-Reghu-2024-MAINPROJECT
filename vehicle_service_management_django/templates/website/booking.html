@@ -130,7 +130,7 @@
 					<div class="row">
 						<div class="col-md-7 col-lg-8">
 							<div class="card">
-								<div class="card-body">
+								<div class="card-body" >
 									
 									
 									<form method="post"enctype="multipart/form-data">
@@ -193,7 +193,11 @@
 		<label for="{{ form.pincode.id_for_label }}">Place</label>
 		{{ form.pincode }}
 	</div>
-</div>
+	<button id="getLocationBtn" type="button">Get Location</button>
+            <div id="map"></div> <!-- Div to display Google Map -->
+        </div>
+{% comment %} </div> {% endcomment %}
+
 
 										<!-- Add other form fields here -->
 									
@@ -339,6 +343,30 @@
 				});
 			});
 		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2TRyh-1VsLvhJZOEibwFoqvfdfGc2reg&libraries=places"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		const locationInput = document.getElementById('id_pincode');  // Change 'id_pincode' to match your pincode field's HTML ID
+		const getLocationBtn = document.getElementById('getLocationBtn');
+	
+		getLocationBtn.addEventListener('click', function() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					const latitude = position.coords.latitude;
+					const longitude = position.coords.longitude;
+	
+					// Set the value of the pincode input field to the user's coordinates
+					locationInput.value = `${latitude}, ${longitude}`;
+				}, function(error) {
+					console.error('Error getting geolocation:', error.message);
+				});
+			} else {
+				console.error('Geolocation is not supported by this browser.');
+			}
+		});
+	});
+	
+</script>
 		
 	</body>
 

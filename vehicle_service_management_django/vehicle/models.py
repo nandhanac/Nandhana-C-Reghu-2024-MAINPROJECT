@@ -114,16 +114,7 @@ class SubSubcategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE,null=True)
     image = models.ImageField(upload_to='subsubcategories/', null=True, blank=True)  # Add an image field
     description = models.TextField(null=True, blank=True)  # Add a description field
-    # description_1 = models.TextField(null=True, blank=True)
-    # price_1 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    # description_2 = models.TextField(null=True, blank=True)
-    # price_2 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    # description_3 = models.TextField(null=True, blank=True)
-    # price_3 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    # description_4 = models.TextField(null=True, blank=True)
-    # price_4 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    # description_5 = models.TextField(null=True, blank=True)
-    # price_5 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
     
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Add a price field
     hours_taken = models.PositiveIntegerField(null=True, blank=True)  # Add hours taken field
@@ -167,12 +158,14 @@ class Booking(models.Model):
     selected_car_model = models.ForeignKey(CarModel, on_delete=models.CASCADE, null=True)
     selected_car_name = models.ForeignKey(CarName, on_delete=models.CASCADE, null=True)
     selected_type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True)
-    pincode = models.CharField(max_length=10, null=True, blank=True)
+    pincode = models.CharField(max_length=35, null=True, blank=True)
     stat=(('Pending','Pending'),('Approved','Approved'),('Repairing','Repairing'),('Repairing Done','Repairing Done'),('Released','Released'))
     status=models.CharField(max_length=50,choices=stat,default='Pending',null=True)
     customer=models.ForeignKey(Customer, on_delete=models.CASCADE,null=True)
     mechanic=models.ForeignKey('Mechanic',on_delete=models.CASCADE,null=True)
     driver = models.ForeignKey(Mechanic, on_delete=models.CASCADE, related_name='assigned_bookings', null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
 
     PAYMENT_CHOICES = [
         ('Cash', 'Cash on Service'),
@@ -197,6 +190,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.name
+    def save(self, *args, **kwargs):
+        if self.pincode:
+            # Extract latitude and longitude from the pincode field
+            latitude, longitude = self.pincode.split(',')
+            self.latitude = float(latitude.strip())
+            self.longitude = float(longitude.strip())
+        super().save(*args, **kwargs)
     
 
 class Payment(models.Model):

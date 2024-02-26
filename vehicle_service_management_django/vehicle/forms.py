@@ -434,5 +434,6 @@ class BookingForm(forms.ModelForm):
         self.cleaned_data['pickup_service'] = 'Yes'
         return pincode
     
+    
 
 

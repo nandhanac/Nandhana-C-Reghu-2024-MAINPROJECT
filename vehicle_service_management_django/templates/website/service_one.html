@@ -42,7 +42,77 @@
 
 		<!-- Main Wrapper -->
 		<div class="main-wrapper">
-		
+			<header class="header">
+				<nav class="navbar navbar-expand-lg header-nav">
+					<div class="navbar-header">
+						<a id="mobile_btn" href="javascript:void(0);">
+							<span class="bar-icon">
+								<span></span>
+								<span></span>
+								<span></span>
+							</span>
+						</a>
+						<a href="index-2.html" class="navbar-brand logo">
+							<h2 style="color:#D81324;" ><i class="fa fa-car me-3"></i>SPLASH PaintZone</h2>
+					</div>
+					<div class="main-menu-wrapper">
+						<div class="menu-header">
+							<a href="index-2.html" class="menu-logo">
+								<img src="assets/img/logo.png" class="img-fluid" alt="Logo">
+							</a>
+							<a id="menu_close" class="menu-close" href="javascript:void(0);">
+								<i class="fas fa-times"></i>
+							</a>
+						</div>
+						<ul class="main-nav">
+							<li>
+								<a href="index-2.html">Home</a>
+							</li>
+							<li class="has-submenu ">
+								<a href="{% url 'about' %}">About </a>
+							</li>	
+							<li class="has-submenu active">
+								<a href="#">Services</a>
+							</li>	
+							<li class="has-submenu">
+								<a href="#">Appointments <i class="fas fa-chevron-down"></i></a>
+								<ul class="submenu">
+									<li><a href="{%url 'customer-view-request'%}">View Request</a></li>
+									<li><a href="{%url 'customer-view-approved-request'%}">Approved Request</a></li>
+							
+						
+								</ul>
+							</li>
+							
+						</ul>
+					</div>		 
+					<ul class="nav header-navbar-rht">
+						
+							
+						<!-- User Menu -->
+						<li class="nav-item dropdown has-arrow logged-item">
+							<a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+								<span class="user-img">
+									<h6>{{user.first_name.title}}</h6>
+								</span>
+							</a>
+							<div class="dropdown-menu dropdown-menu-right">
+							
+								<a class="dropdown-item" href="/customer-profile">
+									<i class="fas fa-user-tie"></i>
+								
+								<span>Profile</span></a>
+								<a class="dropdown-item" href="/logout" > 
+									<i class="fas fa-sign-out-alt"></i>
+								<span>Logout</span></a>
+								
+							</div>
+						</li>
+						<!-- /User Menu -->
+						
+					</ul>
+				</nav>
+			</header>
 			<!-- Header --
 			
 			<!-- Page Content -->
@@ -157,33 +227,7 @@
 
 												<option value="{{ subsubcategory.id }}"><h4 class="doc-name">{{ subsubcategory.name }}</h4></option>
 												<p class="doc-speciality">{{ subsubcategory.description }}</p>
-												<div class="clinic-services">
-													{% comment %} <span>{{ subsubcategory.description_1 }}</span>
-													<span> {{ subsubcategory.description_2 }}</span>
-													<span> {{ subsubcategory.description_3 }}</span>
-													<span> {{ subsubcategory.description_4 }}</span>
-													<span> {{ subsubcategory.description_5 }}</span> {% endcomment %}
-													<label>
-														<input type="checkbox" id="description_1" value="{{ subsubcategory.description_1 }}" data-price="{{ subsubcategory.price_1 }}">
-														{{ subsubcategory.description_1 }}
-													</label>
-													<label>
-														<input type="checkbox" id="description_2" value="{{ subsubcategory.description_2 }}" data-price="{{ subsubcategory.price_2 }}">
-														{{ subsubcategory.description_2 }}
-													</label>
-													<label>
-														<input type="checkbox" id="description_3" value="{{ subsubcategory.description_3 }}" data-price="{{ subsubcategory.price_3 }}">
-														{{ subsubcategory.description_3 }}
-													</label>
-													<label>
-														<input type="checkbox" id="description_4" value="{{ subsubcategory.description_4 }}" data-price="{{ subsubcategory.price_4 }}">
-														{{ subsubcategory.description_4 }}
-													</label>
-													<label>
-														<input type="checkbox" id="description_5" value="{{ subsubcategory.description_5 }}" data-price="{{ subsubcategory.price_5 }}">
-														{{ subsubcategory.description_5 }}
-													</label>
-												</div>
+												
 												<br>
 												<div class="rating">
 													<i class="fas fa-star filled"></i>
@@ -205,19 +249,12 @@
 												<ul>
 													
 													<li><i class="far fa-hourglass"></i>{{ subsubcategory.hours_taken}} Hours</li>
-													 <li> </li> 
+													<li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li>
 													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li>  {% endcomment %}
 													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.total_price }} </li> {% endcomment %}
 			
 												</ul>
-												<div>
-													{% comment %} <h4>Selected Descriptions:</h4> {% endcomment %}
-													<ul id="selectedDescriptions">
-														<!-- The selected descriptions will be dynamically added here -->
-													</ul>
-													<h4 id="totalPrice">Total Price: Rs- 0.00</h4>
-												</div>
-
+												
 
 											</div>
 											<div class="clinic-booking">

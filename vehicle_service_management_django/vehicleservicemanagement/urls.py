@@ -9,6 +9,7 @@ from django.contrib.auth.views import LoginView,LogoutView
 from vehicle.views import ResetPasswordView, ChangePasswordView
 from django.contrib.auth import views as auth_views
 from django.conf.urls.static import static
+from vehicle.views import map_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -150,6 +151,7 @@ path('delete-subsubcategory/<int:subsubcategory_id>/', views.delete_subsubcatego
     path('assigned-bookings/', views.assigned_bookings_view, name='assigned-bookings'),
     path('assign-driver/<int:booking_id>/', views.assign_driver_view, name='assign-driver'),
     path('send_email_to_driver/<int:booking_id>/', views.assign_driver_view, name='send_email_to_driver'),
+    path('map/<int:booking_id>/', map_view, name='map_view'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

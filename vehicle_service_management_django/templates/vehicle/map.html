@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Location Map</title>
+    <style>
+        /* Add CSS styles for the map container */
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://www.bing.com/api/maps/mapcontrol?key=ApWlPvCZyOjxWrH_LUWAnR8RsHLSpc2EK9FI-kOlz7HgV_fWe4SiEoQBGf3zoW0j"></script>
+
+</head>
+<body>
+    <h1>Customer Location</h1>
+    <div id="map"></div>
+
+    <script>
+        function loadMapScenario() {
+            var latitude = parseFloat("{{ latitude }}");
+            var longitude = parseFloat("{{ longitude }}");
+    
+            // Initialize Bing Maps control
+            var map = new Microsoft.Maps.Map('#map', {
+                credentials: 'ApWlPvCZyOjxWrH_LUWAnR8RsHLSpc2EK9FI-kOlz7HgV_fWe4SiEoQBGf3zoW0j',
+                center: new Microsoft.Maps.Location(latitude, longitude),
+                zoom: 15
+            });
+    
+            // Add pushpin at the specified location
+            var pushpin = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(latitude, longitude));
+            map.entities.push(pushpin);
+        }
+
+        // Call loadMapScenario function when the page loads
+        window.onload = loadMapScenario;
+    </script>
+</body>
+</html>

@@ -213,3 +213,25 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment ID: {self.id}, Status: {self.payment_status}"
+    
+
+# class Blog(models.Model):
+#     author = models.ForeignKey(User, on_delete=models.CASCADE)
+#     title = models.CharField(max_length=100)
+#     content = models.TextField()
+#     is_approved = models.BooleanField(default=False)
+#     created_at = models.DateTimeField(auto_now_add=True)
+class Blog(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    image = models.ImageField(upload_to='blog_images/', null=True, blank=True) 
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def author_name(self):
+        return self.author.customer.get_name if hasattr(self.author, 'customer') else self.author.username
+
+    def __str__(self):
+        return self.title

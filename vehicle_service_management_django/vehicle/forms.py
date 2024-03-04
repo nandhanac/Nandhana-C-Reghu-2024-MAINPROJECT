@@ -437,3 +437,14 @@ class BookingForm(forms.ModelForm):
     
 
 
+from .models import Blog
+
+class BlogForm(forms.ModelForm):
+    class Meta:
+        model = Blog
+        fields = ['title', 'content', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control border-0', 'placeholder': 'Title', 'style': 'height: 55px;', 'autocomplete': 'off'}),
+            'content': forms.Textarea(attrs={'class': 'form-control border-0', 'placeholder': 'Your blog content', 'rows': 5, 'autocomplete': 'off'}),
+            'image': forms.FileInput(attrs={'class': 'form-control border-0', 'accept': 'image/*'}),
+        }

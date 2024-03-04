@@ -39,6 +39,7 @@ def home(request):
     denting_painting_category = Category.objects.get(name="Denting & Painting")
     car_spa_category = Category.objects.get(name="Car Spa & Cleaning")
     detailing_category = Category.objects.get(name="Detailing Service")
+    approved_blogs = Blog.objects.filter(is_approved=True)
 
     # Include the category names in the context
     context = {
@@ -46,6 +47,7 @@ def home(request):
         'denting_painting_category_name': denting_painting_category.name,
         'car_spa_category_name': car_spa_category.name,
         'detailing_category_name': detailing_category.name,
+         'approved_blogs': approved_blogs,
     }
 
     return render(request, 'vehicle/customerpage.html', context)
@@ -472,6 +474,62 @@ def map_view(request, booking_id):
     longitude = booking.longitude
 
     return render(request, 'vehicle/map.html', {'latitude': latitude, 'longitude': longitude})
+
+
+
+from django.contrib import messages
+from .forms import BlogForm
+from .models import Blog
+
+def blog_submission(request):
+    if request.method == 'POST':
+        form = BlogForm(request.POST, request.FILES)
+        if form.is_valid():
+            blog = form.save(commit=False)
+            blog.author = request.user
+            blog.save()
+            messages.success(request, 'Blog submitted successfully! It will be reviewed by the admin.')
+            return redirect('blog_submission')  # Replace 'home' with the URL name of your homepage
+    else:
+        form = BlogForm()
+    return render(request, 'vehicle/blogs.html', {'form': form})
+
+def admin_blog_approval(request):
+    pending_blogs = Blog.objects.filter(is_approved=False)
+    return render(request, 'vehicle/admin_blog_approval.html', {'pending_blogs': pending_blogs})
+
+def approved_blogs(request):
+    approved_blogs = Blog.objects.filter(is_approved=True)
+    return render(request, 'vehicle/approve_blog.html', {'approved_blogs': approved_blogs})
+def approve_blog(request, blog_id):
+    blog = Blog.objects.get(pk=blog_id)
+    blog.is_approved = True
+    blog.save()
+    return redirect('admin_blog_approval')
+def reject_blog(request, blog_id):
+    blog = Blog.objects.get(pk=blog_id)
+    blog.delete()  # Or you can mark it as rejected, depending on your requirement
+    return redirect('admin_blog_approval')
+def reject_blog(request, blog_id):
+    blog = Blog.objects.get(pk=blog_id)
+    blog.delete()  # Or you can mark it as rejected, depending on your requirement
+    return redirect('approved_blogs')
+@login_required(login_url='adminlogin')
+def admin_blogs_view(request):
+    return render(request,'vehicle/admin_blogs.html')
+
+from django.http import JsonResponse
+from .models import Blog
+
+def like_blog(request):
+    if request.method == 'POST' and request.is_ajax():
+        blog_id = request.POST.get('blog_id')
+        blog = Blog.objects.get(id=blog_id)
+        blog.likes += 1
+        blog.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
 #============================================================================================
 # ADMIN RELATED views start
 #============================================================================================
@@ -1189,21 +1247,59 @@ def mechanic_work_assigned_view(request):
     return render(request,'vehicle/mechanic_work_assigned.html',{'works':works,'mechanic':mechanic})
 
 
+# @login_required(login_url='mechaniclogin')
+# @user_passes_test(is_mechanic)
+# def mechanic_update_status_view(request,pk):
+#     mechanic=models.Mechanic.objects.get(user_id=request.user.id)
+#     updateStatus=forms.MechanicUpdateStatusForm()
+#     if request.method=='POST':
+#         updateStatus=forms.MechanicUpdateStatusForm(request.POST)
+#         if updateStatus.is_valid():
+#             enquiry_x=models.Booking.objects.get(id=pk)
+#             enquiry_x.status=updateStatus.cleaned_data['status']
+#             enquiry_x.save()
+#         else:
+#             print("form is invalid")
+#         return HttpResponseRedirect('/mechanic-work-assigned')
+#     return render(request,'vehicle/mechanic_update_status.html',{'updateStatus':updateStatus,'mechanic':mechanic})
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 @login_required(login_url='mechaniclogin')
 @user_passes_test(is_mechanic)
-def mechanic_update_status_view(request,pk):
-    mechanic=models.Mechanic.objects.get(user_id=request.user.id)
-    updateStatus=forms.MechanicUpdateStatusForm()
-    if request.method=='POST':
-        updateStatus=forms.MechanicUpdateStatusForm(request.POST)
+def mechanic_update_status_view(request, pk):
+    mechanic = models.Mechanic.objects.get(user_id=request.user.id)
+    updateStatus = forms.MechanicUpdateStatusForm()
+    
+    if request.method == 'POST':
+        updateStatus = forms.MechanicUpdateStatusForm(request.POST)
         if updateStatus.is_valid():
-            enquiry_x=models.Booking.objects.get(id=pk)
-            enquiry_x.status=updateStatus.cleaned_data['status']
+            enquiry_x = models.Booking.objects.get(id=pk)
+            status = updateStatus.cleaned_data['status']
+            enquiry_x.status = status
             enquiry_x.save()
+            
+            # Send email if status is "Repairing Done"
+            if status == 'Repairing Done':
+                send_repair_done_email('nandhanareghu8333@gmail.com') 
+                
+            return HttpResponseRedirect('/mechanic-work-assigned')
         else:
-            print("form is invalid")
-        return HttpResponseRedirect('/mechanic-work-assigned')
-    return render(request,'vehicle/mechanic_update_status.html',{'updateStatus':updateStatus,'mechanic':mechanic})
+            print("Form is invalid")
+    
+    return render(request, 'vehicle/mechanic_update_status.html', {'updateStatus': updateStatus, 'mechanic': mechanic})
+
+def send_repair_done_email(customer_email):
+    subject = 'Your vehicle repair is complete!'
+    html_message = render_to_string('website/repair_done_email.html')
+    plain_message = strip_tags(html_message)
+    from_email = 'nandhanareghu2024@mca.ajce.in'  # Update with your email
+    to = customer_email
+    
+    send_mail(subject, plain_message, from_email, [to], html_message=html_message)
+
 
 @login_required(login_url='mechaniclogin')
 @user_passes_test(is_mechanic)

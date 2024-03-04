@@ -153,5 +153,13 @@ path('delete-subsubcategory/<int:subsubcategory_id>/', views.delete_subsubcatego
     path('send_email_to_driver/<int:booking_id>/', views.assign_driver_view, name='send_email_to_driver'),
     path('map/<int:booking_id>/', map_view, name='map_view'),
 
+    path('admin-blogs', views.admin_blogs_view,name='admin-blogs'),
+    path('blogs', views.blog_submission, name='blog_submission'),
+    path('approve-blog/<int:blog_id>/', views.approve_blog, name='approve_blog'),
+    path('reject_blog/<int:blog_id>/', views.reject_blog, name='reject_blog'),
+    path('admin-blog-approval', views.admin_blog_approval, name='admin_blog_approval'),
+    path('approved-blogs/', views.approved_blogs, name='approved_blogs'),
+    path('like/<int:blog_id>/', views.like_blog, name='like_blog'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,0 +1,54 @@
+{% extends 'vehicle/adminbase.html' %}
+{% block content %}
+<div class="wrapper">
+   
+    <div class="row">
+        <div class="col-12 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 style="color:red; text-align:center" >Pending Blogs Approval
+                    </h3>
+
+                </div>
+                <div class="card-content">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for blog in pending_blogs %}
+            <tr>
+                <td>{{ blog.author_name }}</td>
+                <td>{{ blog.title }}</td>
+                <td>{{ blog.content }}</td>
+                <td><img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="max-width: 100px; max-height: 100px;"></td>
+                <td>
+                    <form method="POST" action="{% url 'approve_blog' blog.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success" style="background-color:green;">&#10004;</button>
+                    </form>
+                    <form method="POST" action="{% url 'reject_blog' blog.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">&#10008;</button>
+                    </form>
+
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No pending blogs for approval.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

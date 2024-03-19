@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 		
 		<!-- Favicons -->
-		<link href="{%static "assets/img/favicon.png"%}" rel="icon">
+		{% comment %} <link href="{%static "assets/img/favicon.png"%}" rel="icon"> {% endcomment %}
 		
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" href="{%static "assets/css/bootstrap.min.css"%}">
@@ -208,7 +208,7 @@
 											</div>
 										</div>
 										</div>
-									</form>
+									
 									<!-- /Checkout Form -->
 									
 									
@@ -253,17 +253,48 @@
 									
 									<div class="booking-summary">
 										<div class="booking-item-wrap">
-											<ul class="booking-date">
+											{% comment %} <ul class="booking-date">
 												<li> <span>{{ subsubcategory.description }}</span></li>
 												<br><br>
-											</ul>
+											</ul> {% endcomment %}
+
+
+											<div class="form-group">
+												<label>Select Item:</label><br>
+												{% for item in items %}
+													<div class="form-check">
+														<input class="form-check-input item-checkbox" type="checkbox" id="item_{{ item.id }}" name="items" value="{{ item.id }}" data-price="{{ item.price }}">
+														<label class="form-check-label" for="item_{{ item.id }}">{{ item.name }}</label>
+													</div>
+												{% endfor %}
+												
+												{% comment %} <div class="booking-total">
+													<ul class="booking-total-list">
+														<li>
+															<span>Total Price:</span>
+															<input type="text" class="form-control" id="total-price" readonly> <!-- Display total price here -->
+														</li>
+													</ul>
+												</div>
+												 {% endcomment %}
+												
+												 <div class="booking-total">
+													<ul class="booking-total-list">
+														<li>
+															<span>Service Price:</span>
+															<span class="total-cost">{{ subsubcategory.price }}</span>
+														</li>
+														<li>
+														</div>
+											
 											
 											<div class="booking-total">
 												<ul class="booking-total-list">
 													<li>
 														<span>Total</span>
 														
-													<span class="total-cost"> {{ subsubcategory.price }}</span> 
+														<input type="text" class="form-control" id="total-price" name="total_price" readonly>
+
 													</li>
 												</ul>
 											</div>
@@ -272,7 +303,7 @@
 								</div>
 							</div>
 							<!-- /Booking Summary -->
-							
+						</form>
 						</div>
 					</div>
 
@@ -296,7 +327,8 @@
 		<!-- Sticky Sidebar JS -->
         <script src="{%static "assets/plugins/theia-sticky-sidebar/ResizeSensor.js"%}"></script>
         <script src="{%static "assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js"%}"></script>
-		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 		<!-- Custom JS -->
 		<script src="{%static "assets/js/script.js"%}"></script>
 		<script>
@@ -367,7 +399,26 @@
 	});
 	
 </script>
-		
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var checkboxes = document.querySelectorAll('.item-checkbox');
+        var totalPriceInput = document.getElementById('total-price');
+        var subsubcategoryPrice = parseFloat("{{ subsubcategory.price }}");
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var totalPrice = subsubcategoryPrice;
+                checkboxes.forEach(function(cb) {
+                    if (cb.checked) {
+                        totalPrice += parseFloat(cb.getAttribute('data-price'));
+                    }
+                });
+                totalPriceInput.value = totalPrice.toFixed(2);  // Update the hidden input field
+            });
+        });
+    });
+</script>
+
 	</body>
 
 </html>

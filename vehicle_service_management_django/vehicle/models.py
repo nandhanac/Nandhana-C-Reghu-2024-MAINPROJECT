@@ -179,6 +179,12 @@ class Booking(models.Model):
     ]
 
     pickup_service = models.CharField(max_length=5, choices=PICKUP_CHOICES, default='No', null=True)
+
+    items = models.ManyToManyField('ItemPrice') 
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+     # Many-to-Many relationship with ItemPrice
+
+    
     
 
     # def save(self, *args, **kwargs):
@@ -235,3 +241,10 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+    
+class ItemPrice(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name

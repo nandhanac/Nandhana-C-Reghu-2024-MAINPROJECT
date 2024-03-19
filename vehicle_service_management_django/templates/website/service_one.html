@@ -8,7 +8,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 		
 		<!-- Favicons -->
-		<link href="{%static 'assets/img/favicon.png'%}" rel="icon">
+		{% comment %} <link href="{%static 'assets/img/favicon.png'%}" rel="icon"> {% endcomment %}
 		
 		<!-- Bootstrap CSS -->
 		<link rel="stylesheet" href="{%static 'assets/css/bootstrap.min.css'%}">
@@ -249,10 +249,8 @@
 												<ul>
 													
 													<li><i class="far fa-hourglass"></i>{{ subsubcategory.hours_taken}} Hours</li>
-													<li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li>
-													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li>  {% endcomment %}
-													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.total_price }} </li> {% endcomment %}
-			
+													{% comment %} <li><i class="far fa-money-bill-alt"></i> Rs- {{ subsubcategory.price}} </li> {% endcomment %}
+													
 												</ul>
 												
 

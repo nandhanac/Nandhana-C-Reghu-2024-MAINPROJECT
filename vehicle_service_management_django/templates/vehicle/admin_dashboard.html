@@ -2,55 +2,94 @@
 {% load static %}
 {% block content %}
 
-	<!-- main content -->
-	<div class="wrapper">
+    <!-- main content -->
+    <div class="wrapper">
 
-<!-- ****** cards start ********** -->
-		<div class="row">
-			<div class="col-3 col-m-6 col-sm-6">
-				<div class="counter bg-primary">
-					<p>
-						<i class="fas fa-users"></i>
-					</p>
-					<h3>{{total_customer}}</h3>
-					<p>Total Customer</p>
-				</div>
-			</div>
-			<div class="col-3 col-m-6 col-sm-6">
-				<div class="counter bg-warning">
-					<p>
-						<i class="fas fa-hat-cowboy"></i>
-					</p>
-					<h3>{{total_mechanic}}</h3>
-					<p>Total Mechanic</p>
-				</div>
-			</div>
-			<div class="col-3 col-m-6 col-sm-6">
-				<div class="counter bg-success">
-					<p>
-						<i class="fas fa-spinner"></i>
-					</p>
-					<h3>{{total_request}}</h3>
-					<p>Total Enquiry</p>
-				</div>
-			</div>
-			<div class="col-3 col-m-6 col-sm-6">
-				<div class="counter bg-danger">
-					<p>
-						<i class="fas fa-comments"></i>
-					</p>
-					<h3>{{total_feedback}}</h3>
-					<p>Total Feedback</p>
-				</div>
-			</div>
-		</div>
-<!-- ****** cards end ********** -->
+        <!-- ****** cards start ********** -->
+        <div class="row">
+            <div class="col-3 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <i class="fas fa-users"></i>
+                    </p>
+                    <h3>{{total_customer}}</h3>
+                    <p>Total Customer</p>
+                </div>
+            </div>
+            <div class="col-3 col-m-6 col-sm-6">
+                <div class="counter bg-warning">
+                    <p>
+                        <i class="fas fa-hat-cowboy"></i>
+                    </p>
+                    <h3>{{total_mechanic}}</h3>
+                    <p>Total Mechanic</p>
+                </div>
+            </div>
+            <div class="col-3 col-m-6 col-sm-6">
+                <div class="counter bg-success">
+                    <p>
+                        <i class="fas fa-spinner"></i>
+                    </p>
+                    <h3>{{total_request}}</h3>
+                    <p>Total Enquiry</p>
+                </div>
+            </div>
+            <div class="col-3 col-m-6 col-sm-6">
+                <div class="counter bg-danger">
+                    <p>
+                        <i class="fas fa-comments"></i>
+                    </p>
+                    <h3>{{total_feedback}}</h3>
+                    <p>Total Feedback</p>
+                </div>
+            </div>
+        </div>
+        <!-- ****** cards end ********** -->
 
+        <!-- Booking Metrics Graph -->
+        <div class="col-12">
+            <h2>Booking Metrics</h2>
+            <canvas id="bookingChart" width="400" height="200"></canvas>
+        </div>
 
+    </div>
+    <!-- end main content -->
 
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+		// Retrieve booking data from Django template variables
+		var bookingLabels = {{ booking_labels|safe }};
+		var bookingData = {{ booking_data|safe }};
+	
+		// Create a new Chart instance
+		var ctx = document.getElementById('bookingChart').getContext('2d');
+		var bookingChart = new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: bookingLabels,
+				datasets: [{
+					label: 'Booking Count',
+					data: bookingData,
+					backgroundColor: 'rgba(255, 99, 132, 0.2)',
+					borderColor: 'rgba(255, 99, 132, 1)',
+					borderWidth: 1
+				}]
+			},
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true
+					}
+				},
+				// Adjust bar width
+				barThickness: 'flex', // Set bar width to be flexible
+				categoryPercentage: 0.1, // Adjust the width of the bars relative to the available space
+				barPercentage: 0.8 // Adjust the width of the bars relative to the category width
+				
+			}
+		});
+	</script>
+	
 
-  <br><br><br><br><br><br>
-
-	</div>
-	<!-- end main content -->
 {% endblock content %}

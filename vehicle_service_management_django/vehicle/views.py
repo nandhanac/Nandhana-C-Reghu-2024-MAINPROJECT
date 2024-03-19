@@ -542,12 +542,17 @@ def admin_dashboard_view(request):
     for enq in enquiry:
         customer=models.Customer.objects.get(id=enq.customer_id)
         customers.append(customer)
+    booking_queryset = Booking.objects.all().order_by('appointment_date')
+    booking_dates = [booking.appointment_date.strftime('%Y-%m-%d') for booking in booking_queryset]
+    booking_counts = [booking_queryset.filter(appointment_date=date).count() for date in booking_dates]
     dict={
     'total_customer':models.Customer.objects.all().count(),
     'total_mechanic':models.Mechanic.objects.all().count(),
     'total_request':models.Booking.objects.all().count(),
     'total_feedback':models.Feedback.objects.all().count(),
     'data':zip(customers,enquiry),
+    'booking_labels': booking_dates,
+    'booking_data': booking_counts,
     }
     return render(request,'vehicle/admin_dashboard.html',context=dict)
 #  service
@@ -1463,11 +1468,16 @@ from django.shortcuts import redirect
 #         form = BookingForm(initial={'name': request.user.first_name})
 
 #     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
+from .models import ItemPrice
+from django.db.models import Sum
+
+from django.db.models import Sum
 
 @login_required(login_url='customerlogin')
 def book_service(request, subsubcategory_id):
     subsubcategory = get_object_or_404(SubSubcategory, pk=subsubcategory_id)
     customer = Customer.objects.get(user=request.user)
+    items = ItemPrice.objects.all()
 
     if request.method == 'POST':
         form = BookingForm(request.POST, request.FILES)
@@ -1476,29 +1486,76 @@ def book_service(request, subsubcategory_id):
             booking.selected_subsubcategory = subsubcategory
             booking.customer = customer
             booking.name = request.user.first_name
-            booking.selected_service_price = subsubcategory.price
 
-            
+            # Calculate the total selected service price
+            selected_service_price = subsubcategory.price
 
-            # Check if pickup service is set to "No" and pincode field is disabled
-            if booking.pickup_service == 'No' and 'pincode' not in form.cleaned_data:
-                booking.save()
-                return redirect('success_page')  # Redirect to success page or any other page
-            else:
-                booking.save()
+            # Calculate the total estimated price from selected items
+            selected_items = ItemPrice.objects.filter(id__in=request.POST.getlist('items'))
+            total_estimated_price = selected_items.aggregate(total_price=Sum('price'))['total_price'] or 0
 
-                if booking.pickup_service == 'Yes':
-                    # Handle pickup service logic here
-                    pass
+            # Calculate the total price
+            total_price = selected_service_price + total_estimated_price
 
-                if booking.payment_method == 'Cash':
-                    return redirect('bookconfirm_cash', booking.id)
-                elif booking.payment_method == 'Online':
-                    return redirect('payment_confirmation')
+            # Assign the calculated prices to the booking object
+            booking.selected_service_price = selected_service_price
+            booking.total_estimated_price = total_estimated_price
+            booking.total_price = total_price  # Assign the total price here
+
+            # Save the booking
+            booking.save()
+
+            # Redirect to appropriate page based on payment method and pickup service
+            if booking.pickup_service == 'Yes':
+                # Handle pickup service logic here
+                pass
+
+            if booking.payment_method == 'Cash':
+                return redirect('bookconfirm_cash', booking.id)
+            elif booking.payment_method == 'Online':
+                return redirect('payment_confirmation')
     else:
         form = BookingForm(initial={'name': request.user.first_name})
 
-    return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory})
+    return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory, 'items': items})
+
+
+# @login_required(login_url='customerlogin')
+# def book_service(request, subsubcategory_id):
+#     subsubcategory = get_object_or_404(SubSubcategory, pk=subsubcategory_id)
+#     customer = Customer.objects.get(user=request.user)
+#     items = ItemPrice.objects.all() 
+
+#     if request.method == 'POST':
+#         form = BookingForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             booking = form.save(commit=False)
+#             booking.selected_subsubcategory = subsubcategory
+#             booking.customer = customer
+#             booking.name = request.user.first_name
+#             booking.selected_service_price = subsubcategory.price
+
+            
+
+#             # Check if pickup service is set to "No" and pincode field is disabled
+#             if booking.pickup_service == 'No' and 'pincode' not in form.cleaned_data:
+#                 booking.save()
+#                 return redirect('success_page')  # Redirect to success page or any other page
+#             else:
+#                 booking.save()
+
+#                 if booking.pickup_service == 'Yes':
+#                     # Handle pickup service logic here
+#                     pass
+
+#                 if booking.payment_method == 'Cash':
+#                     return redirect('bookconfirm_cash', booking.id)
+#                 elif booking.payment_method == 'Online':
+#                     return redirect('payment_confirmation')
+#     else:
+#         form = BookingForm(initial={'name': request.user.first_name})
+
+#     return render(request, 'website/booking.html', {'form': form, 'subsubcategory': subsubcategory, 'items': items})
 
 @login_required(login_url='customerlogin')
 def booking_confirmation(request, booking_id,payment_amount):
@@ -1526,6 +1583,70 @@ razorpay_client = razorpay.Client(
  
  
 
+# @login_required
+# def payment_confirmation(request):
+#     currency = 'INR'
+#     user = request.user
+#     customer, created = Customer.objects.get_or_create(user=user)
+
+#     # Retrieve the booking associated with the current user (you may need to adjust the query depending on your model relationships)
+#     booking = Booking.objects.filter(customer=customer).last()
+
+#     if booking:
+#         # Get the selected service's price from the booking
+#         selected_service_price = booking.selected_subsubcategory.price
+
+#         # Calculate the payment amount (if the service has a price)
+#         if selected_service_price is not None:
+#             amount = int(selected_service_price * 100)  # Convert to paisa
+#         else:
+#             amount = 0  # Default to 0 if price is not set
+#     else:
+#         amount = 0  # Default to 0 if there's no booking
+    
+#     request.session['payment_amount'] = amount
+#     request.session['booking_id'] = booking.pk
+
+
+#     # Create a Razorpay Order
+#     razorpay_order = razorpay_client.order.create(dict(
+#         amount=amount,
+#         currency=currency,
+#         payment_capture='0'
+#     ))
+
+#     # Get the current user
+#     # Retrieve or create the associated Customer instance
+#     # Order ID of the newly created order
+#     razorpay_order_id = razorpay_order['id']
+#     callback_url = '/paymenthandler/'
+
+#     # Create a Payment for the appointment
+#     payment = Payment.objects.create(
+#         user=customer,
+#         payment_amount=amount,
+#         payment_status='Pending',
+#     )
+
+#     # Render the success template with the necessary context
+#     context = {
+#         'razorpay_order_id': razorpay_order_id,
+#         'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+#         'razorpay_amount': amount,
+#         'currency': currency,
+#         'callback_url': callback_url,
+#         'booking': booking,  # Pass the booking instance to the template
+
+#     }
+#     messages.success(request, 'Payment amount has been saved. You will be redirected to the payment page.')
+
+#     return render(request, 'website/payment_confirmation.html', context=context)
+ 
+ 
+
+from django.shortcuts import get_object_or_404
+from decimal import Decimal
+
 @login_required
 def payment_confirmation(request):
     currency = 'INR'
@@ -1536,20 +1657,19 @@ def payment_confirmation(request):
     booking = Booking.objects.filter(customer=customer).last()
 
     if booking:
+        # Get the total price from the booking and convert it to float
+        total_price = float(booking.total_price)
+
         # Get the selected service's price from the booking
         selected_service_price = booking.selected_subsubcategory.price
 
-        # Calculate the payment amount (if the service has a price)
-        if selected_service_price is not None:
-            amount = int(selected_service_price * 100)  # Convert to paisa
-        else:
-            amount = 0  # Default to 0 if price is not set
+        # Calculate the payment amount
+        amount = int(total_price * 100)  # Convert to paisa
     else:
         amount = 0  # Default to 0 if there's no booking
-    
+
     request.session['payment_amount'] = amount
     request.session['booking_id'] = booking.pk
-
 
     # Create a Razorpay Order
     razorpay_order = razorpay_client.order.create(dict(
@@ -1578,13 +1698,13 @@ def payment_confirmation(request):
         'razorpay_amount': amount,
         'currency': currency,
         'callback_url': callback_url,
-        'booking': booking,  # Pass the booking instance to the template
-
+        'booking': booking,
+        'total_price': total_price,  # Pass the total price to the template
     }
     messages.success(request, 'Payment amount has been saved. You will be redirected to the payment page.')
 
     return render(request, 'website/payment_confirmation.html', context=context)
- 
+
  
 # we need to csrf_exempt this url as
 # POST request will be made by Razorpay
@@ -1753,3 +1873,35 @@ def generate_invoice_pdf(request, booking_id):
     buffer.close()
 
     return response
+
+
+from .forms import ItemPriceForm
+from .models import ItemPrice
+
+def add_item_price(request):
+    if request.method == 'POST':
+        form = ItemPriceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('add_item_price')  # Redirect back to the same page
+    else:
+        form = ItemPriceForm()
+
+    items = ItemPrice.objects.all()
+    return render(request,  'vehicle/admin_items.html', {'form': form, 'items': items})
+
+def update_item_price(request,item_id):
+    item = get_object_or_404(ItemPrice, pk=item_id)
+    if request.method == 'POST':
+        form = ItemPriceForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect('add_item_price')  # Redirect to a view that lists all items
+    else:
+        form = ItemPriceForm(instance=item)
+    return render(request, 'vehicle/update_item_price.html', {'form': form})
+def delete_item_price(request, item_id):
+    item = get_object_or_404(ItemPrice, pk=item_id)
+    item.delete()
+    return redirect('add_item_price')
+

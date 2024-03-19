@@ -386,6 +386,8 @@ class BookingForm(forms.ModelForm):
         choices=Booking.PICKUP_CHOICES,
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
     )
+        
+        
     def __init__(self, *args, **kwargs):
         super(BookingForm, self).__init__(*args, **kwargs)
         if 'pickup_service' in self.initial and self.initial['pickup_service'] == 'No':
@@ -448,3 +450,10 @@ class BlogForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'class': 'form-control border-0', 'placeholder': 'Your blog content', 'rows': 5, 'autocomplete': 'off'}),
             'image': forms.FileInput(attrs={'class': 'form-control border-0', 'accept': 'image/*'}),
         }
+
+from .models import ItemPrice
+
+class ItemPriceForm(forms.ModelForm):
+    class Meta:
+        model = ItemPrice
+        fields = ['name', 'price']

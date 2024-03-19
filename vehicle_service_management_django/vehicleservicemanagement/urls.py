@@ -160,6 +160,9 @@ path('delete-subsubcategory/<int:subsubcategory_id>/', views.delete_subsubcatego
     path('admin-blog-approval', views.admin_blog_approval, name='admin_blog_approval'),
     path('approved-blogs/', views.approved_blogs, name='approved_blogs'),
     path('like/<int:blog_id>/', views.like_blog, name='like_blog'),
+     path('add-item/', views.add_item_price, name='add_item_price'),
+    path('update-item/<int:item_id>/', views.update_item_price, name='update-item_price'),
+    path('delete-item/<int:item_id>/', views.delete_item_price, name='delete-item_price'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

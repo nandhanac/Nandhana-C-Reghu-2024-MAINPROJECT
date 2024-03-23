@@ -51,7 +51,7 @@ class Hosttest(TestCase):
         budora.click()
         time.sleep(2)
         budora.clear()  # Clear any existing text in the input field
-        budora.send_keys("Gokul Sajo")  # Replace "Your Name" with the name you want to search for
+        budora.send_keys("Gokul")  # Replace "Your Name" with the name you want to search for
         budora.send_keys(Keys.RETURN)
         time.sleep(5)
         budora=driver.find_element(By.CSS_SELECTOR,".home")

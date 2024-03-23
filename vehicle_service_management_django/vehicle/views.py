@@ -886,18 +886,35 @@ def admin_view_mechanic_salary_view(request):
     return render(request,'vehicle/admin_view_mechanic_salary.html',{'mechanics':mechanics})
 
 @login_required(login_url='adminlogin')
-def update_salary_view(request,pk):
-    mechanicSalary=forms.MechanicSalaryForm()
-    if request.method=='POST':
-        mechanicSalary=forms.MechanicSalaryForm(request.POST)
+def update_salary_view(request, pk):
+    mechanic = forms.Mechanic.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        mechanicSalary = forms.MechanicSalaryForm(request.POST)
         if mechanicSalary.is_valid():
-            mechanic=models.Mechanic.objects.get(id=pk)
-            mechanic.salary=mechanicSalary.cleaned_data['salary']
-            mechanic.save()
-        else:
-            print("form is invalid")
-        return HttpResponseRedirect('/admin-view-mechanic-salary')
-    return render(request,'vehicle/admin_approve_mechanic_details.html',{'mechanicSalary':mechanicSalary})
+            salary = mechanicSalary.cleaned_data['salary']
+            if salary >= 5000:
+                mechanic.salary = salary
+                mechanic.save()
+                return HttpResponseRedirect('/admin-view-mechanic-salary')
+            else:
+                mechanicSalary.add_error('salary', 'Salary should be greater than or equal to 5000.')
+    else:
+        mechanicSalary = forms.MechanicSalaryForm(initial={'salary': mechanic.salary})
+    
+    return render(request, 'vehicle/admin_approve_mechanic_details.html', {'mechanicSalary': mechanicSalary})
+# def update_salary_view(request,pk):
+#     mechanicSalary=forms.MechanicSalaryForm()
+#     if request.method=='POST':
+#         mechanicSalary=forms.MechanicSalaryForm(request.POST)
+#         if mechanicSalary.is_valid():
+#             mechanic=models.Mechanic.objects.get(id=pk)
+#             mechanic.salary=mechanicSalary.cleaned_data['salary']
+#             mechanic.save()
+#         else:
+#             print("form is invalid")
+#         return HttpResponseRedirect('/admin-view-mechanic-salary')
+#     return render(request,'vehicle/admin_approve_mechanic_details.html',{'mechanicSalary':mechanicSalary})
 
 
 @login_required(login_url='adminlogin')

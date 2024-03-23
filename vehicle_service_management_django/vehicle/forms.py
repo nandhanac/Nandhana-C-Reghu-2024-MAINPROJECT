@@ -61,7 +61,18 @@ class MechanicForm(forms.ModelForm):
         fields=['address','mobile','profile_pic','job_title', 'qualification_certificate']
     
 class MechanicSalaryForm(forms.Form):
-    salary=forms.IntegerField();
+    salary = forms.IntegerField(label='Salary')
+
+    def clean_salary(self):
+        # Get the cleaned salary data
+        salary = self.cleaned_data.get('salary')
+
+        # Check if the salary is less than 5000 or negative
+        if salary < 5000 or salary < 0:
+            raise forms.ValidationError("Salary should be greater than or equal to 5000 and cannot be negative.")
+
+        # Return the cleaned salary
+        return salary
 
 class AssignDriverForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -457,3 +468,24 @@ class ItemPriceForm(forms.ModelForm):
     class Meta:
         model = ItemPrice
         fields = ['name', 'price']
+    def clean_name(self):
+        # Get the cleaned name data
+        name = self.cleaned_data.get('name')
+        
+        # Check if an item with the same name already exists
+        if ItemPrice.objects.filter(name=name).exists():
+            raise forms.ValidationError("An item with this name already exists.")
+        
+        # Return the cleaned name
+        return name
+
+    def clean_price(self):
+        # Get the cleaned price data
+        price = self.cleaned_data.get('price')
+
+        # Check if the price is less than 100
+        if price < 100:
+            raise forms.ValidationError("Price should be greater than or equal to 100.")
+        
+        # Return the cleaned price
+        return price

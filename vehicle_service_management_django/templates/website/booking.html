@@ -57,7 +57,7 @@
 						</div>
 						<ul class="main-nav">
 							<li>
-								<a href="index-2.html">Home</a>
+								<a href="{%url 'users-home'%}">Home</a>
 							</li>
 							<li class="has-submenu ">
 								<a href="{% url 'about' %}">About </a>
@@ -221,11 +221,11 @@
 						
 							<!-- Booking Summary -->
 							<div class="card booking-card">
-								<div class="alert alert-info">
+								{% comment %} <div class="alert alert-info">
 									......Pickup-off service is available only within a 10km radius.....!
-								</div>
+								</div> {% endcomment %}
 								<div class="card-header">
-									<h4 class="card-title">Booking Summary</h4>
+									<h4 class="card-title">Customize your services</h4>
 								</div>
 								<div class="card-body">
 								
@@ -236,14 +236,14 @@
 										</a>
 										<div class="booking-info">
 											<h4><a href="doctor-profile.html">{{ subsubcategory.name }}</a></h4>
-											<div class="rating">
+											{% comment %} <div class="rating">
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star filled"></i>
 												<i class="fas fa-star"></i>
 												<span class="d-inline-block average-rating">35</span>
-											</div>
+											</div> {% endcomment %}
 											<div class="clinic-details">
 												<i class="far fa-hourglass"></i>{{ subsubcategory.hours_taken}} Hours</i>
 											</div>
@@ -260,11 +260,12 @@
 
 
 											<div class="form-group">
-												<label>Select Item:</label><br>
+												<br><br><label><b>Select extra service:</b></label><br>
 												{% for item in items %}
 													<div class="form-check">
 														<input class="form-check-input item-checkbox" type="checkbox" id="item_{{ item.id }}" name="items" value="{{ item.id }}" data-price="{{ item.price }}">
 														<label class="form-check-label" for="item_{{ item.id }}">{{ item.name }}</label>
+													
 													</div>
 												{% endfor %}
 												
@@ -399,7 +400,7 @@
 	});
 	
 </script>
-<script>
+{% comment %} <script>
     document.addEventListener('DOMContentLoaded', function() {
         var checkboxes = document.querySelectorAll('.item-checkbox');
         var totalPriceInput = document.getElementById('total-price');
@@ -414,6 +415,27 @@
                     }
                 });
                 totalPriceInput.value = totalPrice.toFixed(2);  // Update the hidden input field
+            });
+        });
+    });
+</script> {% endcomment %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var checkboxes = document.querySelectorAll('.item-checkbox');
+        var totalPriceInput = document.getElementById('total-price');
+        var subsubcategoryPrice = parseFloat("{{ subsubcategory.price }}");
+
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var totalPrice = subsubcategoryPrice; // Initialize total price with subsubcategory price
+
+                checkboxes.forEach(function(cb) {
+                    if (cb.checked) {
+                        totalPrice += parseFloat(cb.getAttribute('data-price')); // Add the price of the checked item
+                    }
+                });
+
+                totalPriceInput.value = totalPrice.toFixed(2);  // Update the total price input field
             });
         });
     });
